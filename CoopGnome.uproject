@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{30A34657-4924-84BF-0AB6-E68CF12BD4D5}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "CoopGnome",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		}
+	]
+}
