@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Base/CharacterBase.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CoopGnomeCharacter.generated.h"
@@ -16,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACoopGnomeCharacter : public ACharacter
+class ACoopGnomeCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 
