@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class AWeaponBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -44,6 +45,10 @@ class ACoopGnomeCharacter : public ACharacterBase
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	
+	/** Attack Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* AttackAction;
 
 public:
 	ACoopGnomeCharacter();
@@ -57,6 +62,9 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	/** Called for looking input */
+	void Attack(const FInputActionValue& Value);
+			
 
 protected:
 	// APawn interface
@@ -64,11 +72,28 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<AWeaponBase> DefaultWeaponClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponAttachSocketName;
+	
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+private:
+	
+	UFUNCTION()
+	void EquipWeapon();
+	UFUNCTION()
+	void UnequipWeapon();
+
+	TObjectPtr<AWeaponBase> EquippedWeapon;
+
+
 };
 

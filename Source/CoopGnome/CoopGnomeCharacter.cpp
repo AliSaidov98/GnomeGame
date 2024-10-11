@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "WeaponBase.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -58,6 +59,24 @@ void ACoopGnomeCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	EquipWeapon();
+}
+
+void ACoopGnomeCharacter::EquipWeapon()
+{
+	if(!DefaultWeaponClass)
+		return;
+
+	EquippedWeapon = GetWorld()->SpawnActor<AWeaponBase>(DefaultWeaponClass, GetActorTransform());
+	EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
+	EquippedWeapon->OwnerCharacter = this;
+
+}
+
+void ACoopGnomeCharacter::UnequipWeapon()
+{
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,6 +105,9 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Look);
+		
+		// Attack
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Attack);
 	}
 	else
 	{
@@ -127,4 +149,12 @@ void ACoopGnomeCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
+{
+	if(!EquippedWeapon)
+		return;
+	
+	EquippedWeapon->Attack();
 }
