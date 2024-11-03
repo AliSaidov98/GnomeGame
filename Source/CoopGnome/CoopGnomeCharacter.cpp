@@ -11,6 +11,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "WeaponBase.h"
+#include "Interaction/InteractSphereComponent.h"
+#include "InventoryComponent.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -60,24 +63,81 @@ void ACoopGnomeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	EquipWeapon();
+	SetupInventory();
 }
 
-void ACoopGnomeCharacter::EquipWeapon()
+void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 {
-	if(!DefaultWeaponClass)
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+		EquippedWeapon = nullptr;
+	}
+	
+	FItemStruct WeaponItem;
+	if (!InventoryComponent->GetItemByName(WeaponName, WeaponItem))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): WeaponItem is not found!"));
 		return;
+	}
 
-	EquippedWeapon = GetWorld()->SpawnActor<AWeaponBase>(DefaultWeaponClass, GetActorTransform());
+	if (!WeaponItem.WeaponClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): WeaponClass is not valid!"));
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	EquippedWeapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponItem.WeaponClass, GetActorTransform(), SpawnParams);
+	if (!EquippedWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): EquippedWeapon is not valid!"));
+		return;
+	}
+
 	EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
 	EquippedWeapon->OwnerCharacter = this;
-
 }
 
-void ACoopGnomeCharacter::UnequipWeapon()
+
+void ACoopGnomeCharacter::SetupInventory()
 {
-	
+	InventoryComponent = FindComponentByClass<UInventoryComponent>();
+	if (!InventoryComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::SetupInventory(): InventoryComponent is not valid!"));		
+		return;
+	}
+
+	InventoryComponent->OnWeaponEquipped.AddDynamic(this, &ACoopGnomeCharacter::EquipWeapon);
+	InventoryComponent->OnWeaponUnequipped.AddDynamic(this, &ACoopGnomeCharacter::UnequipWeapon);
 }
+
+void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
+{
+	if (!EquippedWeapon)
+		return;
+
+	FItemStruct WeaponItem;
+	if (!InventoryComponent->GetItemByName(WeaponName, WeaponItem))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::UnequipWeapon(): WeaponItem is not found!"));
+		return;
+	}
+	if (!WeaponItem.WeaponClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): WeaponClass is not valid!"));
+		return;
+	}
+
+	if (EquippedWeapon.GetClass() == WeaponItem.WeaponClass)
+	{
+		EquippedWeapon->Destroy();
+		EquippedWeapon = nullptr;
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -108,6 +168,14 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		
 		// Attack
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Attack);
+		
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Interact);
+
+		
+		// Interact 
+		EnhancedInputComponent->BindAction(EquipNextWeaponAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::EquipNextWeapon);
+
 	}
 	else
 	{
@@ -157,4 +225,44 @@ void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 		return;
 	
 	EquippedWeapon->Attack();
+}
+
+void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)
+{
+	auto InteractComponent = FindComponentByClass<UInteractSphereComponent>();
+	
+	if (!InteractComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::Interact(): No interact component!"));
+		return;
+	}
+	
+	bool bInteracted = InteractComponent->Interact();
+	
+	if (bInteracted)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("INTERACT SUCCESS")));
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("INTERACT  %hhd "), bInteracted));
+
+}
+
+void ACoopGnomeCharacter::EquipNextWeapon(const FInputActionValue& Value)
+{
+	if (!InventoryComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipNextWeapon(): InventoryComponent is not valid!"));
+		return;
+	}
+
+	for (const auto& Item : InventoryComponent->CurrentItems)
+	{
+		if (!Item.WeaponClass)
+			continue;
+
+		if (!EquippedWeapon || Item.WeaponClass != EquippedWeapon.GetClass())
+		{
+			EquipWeapon(Item.Name);
+			return;
+		}
+	}
 }

@@ -12,12 +12,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="528914ed-172d-497d-ba43-fb3b180b30fc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Inventory.uplugin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Resources/Icon128.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Inventory.Build.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/HelperFunctionLibrary.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Inventory.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/InventoryComponent.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/ItemActor.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/ItemUseDefinitions.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/ContainerInventoryWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventoryDragOperation.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventorySlotWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventoryWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/ItemTooltipWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Data/InventoryInfo.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Data/ItemProperties.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/HelperFunctionLibrary.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Inventory.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/InventoryComponent.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/ItemActor.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/ItemUseDefinitions.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/ContainerInventoryWidget.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/InventoryDragOperation.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/InventorySlotWidget.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/InventoryWidget.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/ItemTooltipWidget.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Public/Widget/SplitterWidget.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Flamen.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Flamen.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Prince_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Prince_Skeleton.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Input/IMC_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Input/IMC_Default.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/BP_RiffleWeapon2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/BP_RiffleWeapon2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoopGnome.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/CoopGnome.uproject" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" afterDir="false" />
@@ -31,11 +58,27 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Plugins/Health/Source/Health/Public/HealthComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/HelperFunctionLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/InventoryComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/ContainerInventoryWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventoryDragOperation.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventorySlotWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventoryWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/ItemTooltipWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/SplitterWidget.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/ObjectReplication/Source/ObjectReplication/Public/ORManagerComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/ObjectReplication/Source/ObjectReplication/Public/ORReplicatedObject.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Private/RangedWeapon.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/WeaponBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/InteractSphereComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/InteractSphereComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/InteractionInterface.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/InteractionInterface.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/PickUpItem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/PickUpItem.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="Toolset" />
@@ -726,6 +769,17 @@
       <workItem from="1724095447325" duration="481000" />
       <workItem from="1726847347673" duration="3963000" />
       <workItem from="1728642946253" duration="11887000" />
+      <workItem from="1729074488555" duration="11316000" />
+      <workItem from="1729091889085" duration="4200000" />
+      <workItem from="1729769045827" duration="9430000" />
+      <workItem from="1729864789276" duration="2712000" />
+      <workItem from="1730548571444" duration="2406000" />
+      <workItem from="1730551963899" duration="86000" />
+      <workItem from="1730552164728" duration="1358000" />
+      <workItem from="1730554007977" duration="187000" />
+      <workItem from="1730554301189" duration="1702000" />
+      <workItem from="1730581465911" duration="6941000" />
+      <workItem from="1730629315397" duration="3167000" />
     </task>
     <servers />
   </component>

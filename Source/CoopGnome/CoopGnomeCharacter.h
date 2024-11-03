@@ -14,6 +14,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class AWeaponBase;
+class UInventoryComponent;
+
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -50,6 +52,15 @@ class ACoopGnomeCharacter : public ACharacterBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* AttackAction;
 
+	/** Attack Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
+	
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* EquipNextWeaponAction;
+
 public:
 	ACoopGnomeCharacter();
 	
@@ -65,8 +76,12 @@ protected:
 	/** Called for looking input */
 	void Attack(const FInputActionValue& Value);
 			
-
-protected:
+	/** Called for interact input */
+	void Interact(const FInputActionValue& Value);
+	
+	/** Called for interact input */
+	void EquipNextWeapon(const FInputActionValue& Value);
+	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -86,14 +101,22 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 private:
-	
+	void SetupInventory();
 	UFUNCTION()
-	void EquipWeapon();
+	void EquipWeapon(FString WeaponName);
 	UFUNCTION()
-	void UnequipWeapon();
+	void UnequipWeapon(FString WeaponName);
 
 	TObjectPtr<AWeaponBase> EquippedWeapon;
 
+
+	UInventoryComponent* InventoryComponent;
+	
+	//UPROPERTY()
+	//class ACoopGnomePlayerState* CoopGnomePlayerState;
+
+	UPROPERTY()
+	class ACoopGnomeGameMode* CoopGnomeGameMode;
 
 };
 
