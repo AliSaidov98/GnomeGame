@@ -432,7 +432,9 @@ void UInventoryComponent::InitializeBagInventory(FItemStruct& BagItem) const
 bool UInventoryComponent::AutoEquipItem(FItemStruct& InputItem)
 {
 	const int32 AutoEquipIndex = GetValidSlotForAutoEquip(InputItem.Category);
-
+	
+	UE_LOG(LogTemp, Warning, TEXT("AutoEquipIndex"));		
+		
 	if(AutoEquipIndex != -1)
 	{
 		CurrentItems[AutoEquipIndex] = InputItem;

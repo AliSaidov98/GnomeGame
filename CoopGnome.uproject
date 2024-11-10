@@ -38,6 +38,10 @@
 		{
 			"Name": "Inventory",
 			"Enabled": true
+		},
+		{
+			"Name": "ActionSystem",
+			"Enabled": true
 		}
 	]
 }

@@ -66,6 +66,20 @@ void ACoopGnomeCharacter::BeginPlay()
 	SetupInventory();
 }
 
+
+void ACoopGnomeCharacter::SetupInventory()
+{
+	InventoryComponent = FindComponentByClass<UInventoryComponent>();
+	if (!InventoryComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::SetupInventory(): InventoryComponent is not valid!"));		
+		return;
+	}
+
+	InventoryComponent->OnWeaponEquipped.AddDynamic(this, &ACoopGnomeCharacter::EquipWeapon);
+	InventoryComponent->OnWeaponUnequipped.AddDynamic(this, &ACoopGnomeCharacter::UnequipWeapon);
+}
+
 void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 {
 	if (EquippedWeapon)
@@ -90,28 +104,17 @@ void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	EquippedWeapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponItem.WeaponClass, GetActorTransform(), SpawnParams);
+	
 	if (!EquippedWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): EquippedWeapon is not valid!"));
 		return;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT(" ACoopGnomeCharacter::EquipWeapon():  EquippedWeapon"));
 	EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
 	EquippedWeapon->OwnerCharacter = this;
-}
-
-
-void ACoopGnomeCharacter::SetupInventory()
-{
-	InventoryComponent = FindComponentByClass<UInventoryComponent>();
-	if (!InventoryComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::SetupInventory(): InventoryComponent is not valid!"));		
-		return;
-	}
-
-	InventoryComponent->OnWeaponEquipped.AddDynamic(this, &ACoopGnomeCharacter::EquipWeapon);
-	InventoryComponent->OnWeaponUnequipped.AddDynamic(this, &ACoopGnomeCharacter::UnequipWeapon);
+	
+	IsEquippedWeapon = true;
 }
 
 void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
@@ -135,6 +138,7 @@ void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
 	{
 		EquippedWeapon->Destroy();
 		EquippedWeapon = nullptr;
+		IsEquippedWeapon = false;
 	}
 }
 
