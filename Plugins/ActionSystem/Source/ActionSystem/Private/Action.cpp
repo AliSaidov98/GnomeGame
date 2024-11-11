@@ -35,6 +35,14 @@ bool UAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
+void UAction::ExecutePeriodEffect_Implementation(AActor* Instigator)
+{
+	UActionComponent* Comp = GetOwningComponent();
+	Comp->ActiveTags.AppendTags(GrantTags);
+	bIsRunning = true;
+	GetOwningComponent()->OnActionStart.Broadcast(GetOwningComponent(), this);
+}
+
 bool UAction::IsRunning() const
 {
 	return bIsRunning;

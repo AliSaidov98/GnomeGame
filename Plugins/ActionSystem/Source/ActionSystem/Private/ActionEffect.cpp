@@ -51,8 +51,8 @@ double UActionEffect::GetTimeRemaining() const
 	return EndTime - GetWorld()->GetTimeSeconds();
 }
 
-void UActionEffect::ExecutePeriodEffect_Implementation(AActor* Instigator)
+/*void UActionEffect::ExecutePeriodEffect_Implementation(AActor* Instigator)
 {
-}
+}*/
 
 

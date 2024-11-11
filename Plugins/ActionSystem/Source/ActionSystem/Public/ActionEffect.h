@@ -30,7 +30,7 @@ protected:
 	FTimerHandle DurationTimerHandle;
 	FTimerHandle PeriodTimerHandle;
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Action Effect")
-	void ExecutePeriodEffect(AActor* Instigator);
+	/*UFUNCTION(BlueprintNativeEvent, Category = "Action Effect")
+	void ExecutePeriodEffect(AActor* Instigator);*/
 
 };

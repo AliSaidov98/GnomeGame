@@ -26,7 +26,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, Category="Action")
 	void StopAction(AActor* Instigator);
-
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Action Effect")
+	void ExecutePeriodEffect(AActor* Instigator);
+	
 	UFUNCTION(BlueprintNativeEvent, Category="Action")
 	bool CanStart(AActor* Instigator);
 
