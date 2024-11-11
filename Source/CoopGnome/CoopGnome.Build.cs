@@ -9,6 +9,6 @@ public class CoopGnome : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "AIModule", "GameplayTasks", "AnimGraphRuntime" });
-		PrivateDependencyModuleNames.AddRange(new string[] { "Weapons", "Health", "Inventory"});
+		PrivateDependencyModuleNames.AddRange(new string[] { "Weapons", "Health", "Inventory", "ActionSystem" });
 	}
 }

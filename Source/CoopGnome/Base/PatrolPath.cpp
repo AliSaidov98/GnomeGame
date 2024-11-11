@@ -4,6 +4,7 @@
 #include "PatrolPath.h"
 
 #include "Components/SplineComponent.h"
+#include "Components/BillboardComponent.h"
 
 
 // Sets default values
@@ -11,7 +12,8 @@ APatrolPath::APatrolPath()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	Path = CreateDefaultSubobject<USplineComponent>(TEXT("Path"));
-	Path->SetupAttachment(RootComponent);
+	
+	Path->SetupAttachment(Billboard);
 	Path->SetDrawDebug(true);
 }
 

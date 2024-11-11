@@ -17,3 +17,5 @@ enum class ECombatRole : uint8
 	Defender          UMETA(DisplayName = "Defender"),
 	Sniper            UMETA(DisplayName = "Sniper")
 };
+
+const FName cActionActorBBKey = "ActionActor";

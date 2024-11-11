@@ -20,7 +20,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PatrolPath")
 	class USplineComponent* Path;
-
+	
 	void GetPathPoints();
 
 	TArray<FVector> PathPoints;
