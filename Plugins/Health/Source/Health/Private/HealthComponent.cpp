@@ -41,17 +41,20 @@ void UHealthComponent::ReceiveDamage(float Damage)
 	if (bDead)
 		return;
 
-	if (Damage < 0)
+	if (Damage <= 0)
 	{
 		UE_LOG(LogHealth, Warning, TEXT("UHealthComponent::ReceiveDamage(): Damage < 0"));
 		return;
 	}
 
 	Damage = Damage - Damage * ArmorValue;
+
+	if (Damage <= 0)
+		return;
+	
 	CurrentHealth = FMath::Max(0.f, (CurrentHealth - Damage));
 
-	if (Damage > 0)
-		OnHealthChange.Broadcast(CurrentHealth, MaxHealth);
+	OnHealthChange.Broadcast(CurrentHealth, MaxHealth);
 
 	if (FMath::IsNearlyEqual(CurrentHealth, 0.f, 0.01f))
 	{

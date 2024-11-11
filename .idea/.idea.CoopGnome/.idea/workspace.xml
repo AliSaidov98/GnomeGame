@@ -12,36 +12,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="528914ed-172d-497d-ba43-fb3b180b30fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AI/AIActionPath.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AI/AIActionPath.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_GetNextActionPoint.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_GetNextActionPoint.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_StopUseAction.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_StopUseAction.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_UseAction.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/AITasks/BTTask_UseAction.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Actions/ActionActor.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Actions/ActionActor.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ABP_ALS_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ABP_ALS_Manny.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/Animations/Setup/ABP_AIAnim.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/ABP_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/ABP_Manny.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/AI/Enemy/BP_EnemyCharacter.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Behavior/BB_Base.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Behavior/BB_Base.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Behavior/BT_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Behavior/BT_Default.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Enemy/BP_EnemyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Enemy/BP_EnemyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/4/20/ZA2CUHCC0VLH543SNLSAY7.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/B/U6/O3BCAS1J3GK09HJW6GGUZY.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/B/U6/O3BCAS1J3GK09HJW6GGUZY.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/C/57/K84B4NGW6OHTR28VK1TMFW.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/C/57/K84B4NGW6OHTR28VK1TMFW.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoopGnome.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/CoopGnome.uproject" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/Base/PatrolPath.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/Base/PatrolPath.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/Base/PatrolPath.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/Base/PatrolPath.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CommonDefinitions.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CommonDefinitions.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Health/Source/Health/Private/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Health/Source/Health/Private/HealthComponent.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -782,7 +754,7 @@
       <workItem from="1731151923434" duration="6045000" />
       <workItem from="1731231375608" duration="1617000" />
       <workItem from="1731233042702" duration="6780000" />
-      <workItem from="1731339217760" duration="8199000" />
+      <workItem from="1731339217760" duration="8916000" />
     </task>
     <servers />
   </component>
