@@ -13,13 +13,6 @@
   <component name="ChangeListManager">
     <list default="true" id="528914ed-172d-497d-ba43-fb3b180b30fc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Enemy/BP_EnemyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/AI/Enemy/BP_EnemyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Private/Action.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Private/Action.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Private/ActionEffect.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Private/ActionEffect.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Public/Action.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Public/Action.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Public/ActionEffect.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/ActionSystem/Source/ActionSystem/Public/ActionEffect.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -760,7 +753,8 @@
       <workItem from="1731151923434" duration="6045000" />
       <workItem from="1731231375608" duration="1617000" />
       <workItem from="1731233042702" duration="6780000" />
-      <workItem from="1731339217760" duration="13175000" />
+      <workItem from="1731339217760" duration="13201000" />
+      <workItem from="1731401286656" duration="932000" />
     </task>
     <servers />
   </component>
