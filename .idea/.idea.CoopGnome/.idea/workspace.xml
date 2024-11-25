@@ -13,6 +13,18 @@
   <component name="ChangeListManager">
     <list default="true" id="528914ed-172d-497d-ba43-fb3b180b30fc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/Animations/Sequences/CombatWalkForward4UE4.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/Animations/Sequences/CombatWalkForward4UE4.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/Animations/Sequences/SprintForward4UE4.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/Animations/Sequences/SprintForward4UE4.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/Manny/MM_Run_Fwd.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/Manny/MM_Run_Fwd.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/StarterContent/Particles/Materials/M_Dust_Particle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/StarterContent/Particles/Materials/M_Dust_Particle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Maps/ThirdPersonMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon3.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoopGnome.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/CoopGnome.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Private/RangedWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Private/RangedWeapon.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/RangedWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/RangedWeapon.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -754,7 +766,12 @@
       <workItem from="1731231375608" duration="1617000" />
       <workItem from="1731233042702" duration="6780000" />
       <workItem from="1731339217760" duration="13201000" />
-      <workItem from="1731401286656" duration="932000" />
+      <workItem from="1731401286656" duration="1595000" />
+      <workItem from="1731427458816" duration="744000" />
+      <workItem from="1731599105568" duration="3769000" />
+      <workItem from="1731686372350" duration="3760000" />
+      <workItem from="1731794775201" duration="799000" />
+      <workItem from="1732005294254" duration="11546000" />
     </task>
     <servers />
   </component>

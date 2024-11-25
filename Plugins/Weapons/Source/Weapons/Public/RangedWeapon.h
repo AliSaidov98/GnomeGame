@@ -24,6 +24,12 @@ private:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UParticleSystem> ImpactParticles;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* MuzzleSound;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+	USoundBase* ImpactSound;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Shooting", meta = (AllowPrivateAccess = "true"))
 	FName ShootStartSocket;
 

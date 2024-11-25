@@ -3,7 +3,7 @@
 
 #include "RangedWeapon.h"
 
-
+#include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 
 void ARangedWeapon::Attack()
@@ -39,6 +39,7 @@ void ARangedWeapon::ShootLineTrace()
 
 void ARangedWeapon::PlayImpactEffect(const FVector& ImpactLocation)
 {
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, ImpactLocation);
 	FTransform ParticleTransform;
 	ParticleTransform.SetLocation(ImpactLocation);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, ParticleTransform);
@@ -46,10 +47,10 @@ void ARangedWeapon::PlayImpactEffect(const FVector& ImpactLocation)
 }
 
 void ARangedWeapon::PlayMuzzleEffect()
-{	
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), MuzzleSound, Mesh->GetSocketLocation(ShootStartSocket));
 	FTransform ParticleTransform;
 	ParticleTransform.SetLocation(Mesh->GetSocketLocation(ShootStartSocket));
 	ParticleTransform.SetRotation(FQuat::MakeFromRotator(Mesh->GetSocketRotation(ShootStartSocket)));
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFireParticles, ParticleTransform);
-
 }
