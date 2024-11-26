@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Base/CharacterBase.h"
-#include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CoopGnomeCharacter.generated.h"
 
@@ -18,6 +17,7 @@ class UInventoryComponent;
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
 
 UCLASS(config=Game)
 class ACoopGnomeCharacter : public ACharacterBase
@@ -63,7 +63,11 @@ class ACoopGnomeCharacter : public ACharacterBase
 
 public:
 	ACoopGnomeCharacter();
-	
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveGame();
+
+	FOnLeftGame OnLeftGame;
 
 protected:
 
@@ -96,6 +100,8 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	bool IsEquippedWeapon;
+
+	void OnPlayerStateInitialized();
 	
 public:
 	/** Returns CameraBoom subobject **/
@@ -115,8 +121,8 @@ private:
 
 	UInventoryComponent* InventoryComponent;
 	
-	//UPROPERTY()
-	//class ACoopGnomePlayerState* CoopGnomePlayerState;
+	UPROPERTY()
+	class ACoopGnomePlayerState* CoopGnomePlayerState;
 
 	UPROPERTY()
 	class ACoopGnomeGameMode* CoopGnomeGameMode;

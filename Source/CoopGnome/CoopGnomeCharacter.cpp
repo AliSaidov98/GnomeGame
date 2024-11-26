@@ -13,6 +13,9 @@
 #include "WeaponBase.h"
 #include "Interaction/InteractSphereComponent.h"
 #include "InventoryComponent.h"
+#include "GameStates/CoopGnomePlayerState.h"
+#include "CoopGnomeGameMode.h"
+
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -58,6 +61,16 @@ ACoopGnomeCharacter::ACoopGnomeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void ACoopGnomeCharacter::ServerLeaveGame_Implementation()
+{
+	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
+	CoopGnomePlayerState = CoopGnomePlayerState == nullptr ? GetPlayerState<ACoopGnomePlayerState>() : CoopGnomePlayerState;
+	if (CoopGnomeGameMode && CoopGnomePlayerState)
+	{
+		CoopGnomeGameMode->PlayerLeftGame(CoopGnomePlayerState);
+	}
+}
+
 void ACoopGnomeCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -66,6 +79,11 @@ void ACoopGnomeCharacter::BeginPlay()
 	SetupInventory();
 }
 
+void ACoopGnomeCharacter::OnPlayerStateInitialized()
+{
+	CoopGnomePlayerState->AddToScore(0.f);
+	CoopGnomePlayerState->AddToDefeats(0);
+}
 
 void ACoopGnomeCharacter::SetupInventory()
 {
