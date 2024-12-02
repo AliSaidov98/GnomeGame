@@ -3,6 +3,8 @@
 
 #include "MultiplayerSessionsSubsystem.h"
 
+#include <string>
+
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
 #include "Online/OnlineSessionNames.h"
@@ -19,6 +21,8 @@ DestroySessionCompleteDelegate(FOnDestroySessionCompleteDelegate::CreateUObject(
 	{
 		SessionInterface = Subsystem->GetSessionInterface();
 	}
+
+	
 }
 
 void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
@@ -34,10 +38,22 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	auto ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistingSession != nullptr)
 	{
-		bCreateSessionOnDestroy = true;
+
+		if (ExistingSession->SessionState == EOnlineSessionState::Destroying)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Session still being destroyed...");
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Destroying session...");
+			SessionInterface->DestroySession(NAME_GameSession);
+		}
+		return;
+		
+		/*bCreateSessionOnDestroy = true;
 		LastNumPublicConnections = NumPublicConnections;
 		LastMatchType = MatchType;
-		DestroySession();
+		DestroySession();*/
 	}
 
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
@@ -49,6 +65,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bAllowJoinViaPresence = true;
 	LastSessionSettings->bShouldAdvertise = true;
 	LastSessionSettings->bUsesPresence = true;
+    LastSessionSettings->bUseLobbiesIfAvailable = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->BuildUniqueId = 1;
 
@@ -71,6 +88,10 @@ void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
 	LastSessionSearch->MaxSearchResults = MaxSearchResults;
 	LastSessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL" ? true : false;
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s :: %hs"), *IOnlineSubsystem::Get()->GetSubsystemName().ToString(), "UMultiplayerSessionsSubsystem::FindSessions"));
+
 	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))
@@ -88,6 +109,10 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 		return;
 	}
 	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
+
+	//SessionResult.Session.SessionSettings.bUseLobbiesIfAvailable = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%hhd :: %hs"), SessionResult.Session.SessionSettings.bUseLobbiesIfAvailable, "bUseLobbiesIfAvailable   _   JoinSession"));
+
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionResult))
 	{
@@ -139,10 +164,22 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionCompleted(FName SessionName, 
 
 void UMultiplayerSessionsSubsystem::OnFindSessionCompleted(bool bWasSuccessful)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			15.f,
+			FColor::Red,
+			FString(TEXT("OnFindSessionCompleted"))
+		);
+	}
+	
 	if (SessionInterface)
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%d :: %hs"), LastSessionSearch->SearchResults.Num(), "OnFindSessionCompleted"));
 
 	if (LastSessionSearch->SearchResults.Num() <= 0)
 	{
@@ -154,6 +191,9 @@ void UMultiplayerSessionsSubsystem::OnFindSessionCompleted(bool bWasSuccessful)
 
 void UMultiplayerSessionsSubsystem::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s :: %hs"), *SessionName.ToString(), "OnJoinSessionCompleted"));
+
 	if (SessionInterface)
 	{
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);

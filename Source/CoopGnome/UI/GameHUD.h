@@ -8,6 +8,20 @@
 
 class UMainInterfaceWidget;
 
+USTRUCT(BlueprintType)
+struct FHUDPackage
+{
+	GENERATED_BODY()
+public:
+	class UTexture2D* CrosshairsCenter;
+	UTexture2D* CrosshairsLeft;
+	UTexture2D* CrosshairsRight;
+	UTexture2D* CrosshairsTop;
+	UTexture2D* CrosshairsBottom;
+	float CrosshairSpread;
+	FLinearColor CrosshairsColor;
+};
+
 UCLASS()
 class COOPGNOME_API AGameHUD : public AHUD
 {
@@ -18,6 +32,8 @@ public:
 	void ShowMainInterface();
 
 	void ShowInventory();
+	void SetHUDPackage(const FHUDPackage& HUDPackage);
+
 protected:
 	virtual void BeginPlay() override;
 

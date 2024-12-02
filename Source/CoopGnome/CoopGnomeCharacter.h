@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSubsystem.h"
 #include "Base/CharacterBase.h"
 #include "Logging/LogMacros.h"
 #include "CoopGnomeCharacter.generated.h"
@@ -13,6 +14,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class AWeaponBase;
+class UCombatComponent;
+class AWeapon;
 class UInventoryComponent;
 
 
@@ -61,6 +64,11 @@ class ACoopGnomeCharacter : public ACharacterBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* EquipNextWeaponAction;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UCombatComponent* Combat;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 	ACoopGnomeCharacter();
 
@@ -69,6 +77,8 @@ public:
 
 	FOnLeftGame OnLeftGame;
 
+	virtual void PostInitializeComponents() override;
+	
 protected:
 
 	/** Called for movement input */
@@ -90,7 +100,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// To add mapping context
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<AWeaponBase> DefaultWeaponClass;
@@ -98,16 +108,41 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	FName WeaponAttachSocketName;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	void OnPlayerStateInitialized();
+
+public:
+	
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Weapon")
 	bool IsEquippedWeapon;
 
-	void OnPlayerStateInitialized();
-	
-public:
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FRotator ControlRotation;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FRotator ActorRotation;
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
+
+	void SetOverlappingWeapon(AWeapon* Weapon);
+	bool IsWeaponEquipped();
+	bool IsAiming();
+	AWeapon* GetEquippedWeapon();
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteractPressed();
+
+	void PlayFireMontage(bool bAiming);
+	void PlayReloadMontage();
+	void PlayDeathMontage();
+	void PlaySwapMontage();
+
+	bool bFinishedSwapping = false;
+
 
 private:
 	void SetupInventory();
@@ -116,8 +151,13 @@ private:
 	UFUNCTION()
 	void UnequipWeapon(FString WeaponName);
 
-	TObjectPtr<AWeaponBase> EquippedWeapon;
+	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
+	class AWeapon* OverlappingWeapon;
+	
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
+	TObjectPtr<AWeaponBase> EquippedWeapon;
 
 	UInventoryComponent* InventoryComponent;
 	
@@ -127,5 +167,7 @@ private:
 	UPROPERTY()
 	class ACoopGnomeGameMode* CoopGnomeGameMode;
 
+public:
+	TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> OnlineSessionInterface;
 };
 

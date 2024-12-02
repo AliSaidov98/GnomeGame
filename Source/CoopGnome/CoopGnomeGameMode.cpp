@@ -56,19 +56,19 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 	ACoopGnomePlayerState* AttackerPlayerState = AttackerController ? Cast<ACoopGnomePlayerState>(AttackerController->PlayerState) : nullptr;
 	ACoopGnomePlayerState* VictimPlayerState = VictimController ? Cast<ACoopGnomePlayerState>(VictimController->PlayerState) : nullptr;
 
-	AFreeForAllGameState* FreeFoeAllGameState = GetGameState<AFreeForAllGameState>();
+	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
 
-	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && FreeFoeAllGameState)
+	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && FreeForAllGameState)
 	{
 		TArray<ACoopGnomePlayerState*> PlayersCurrentlyInTheLead;
-		for (auto LeadPlayer : FreeFoeAllGameState->TopScoringPlayers)
+		for (auto LeadPlayer : FreeForAllGameState->TopScoringPlayers)
 		{
 			PlayersCurrentlyInTheLead.Add(LeadPlayer);
 		}
 
 		AttackerPlayerState->AddToScore(1.f);
-		FreeFoeAllGameState->UpdateTopScore(AttackerPlayerState);
-		if (FreeFoeAllGameState->TopScoringPlayers.Contains(AttackerPlayerState))
+		FreeForAllGameState->UpdateTopScore(AttackerPlayerState);
+		if (FreeForAllGameState->TopScoringPlayers.Contains(AttackerPlayerState))
 		{
 			ACoopGnomeCharacter* Leader = Cast<ACoopGnomeCharacter>(AttackerPlayerState->GetPawn());
 			if (Leader)
@@ -79,7 +79,7 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 
 		for (int32 i = 0; i < PlayersCurrentlyInTheLead.Num(); i++)
 		{
-			if (!FreeFoeAllGameState->TopScoringPlayers.Contains(PlayersCurrentlyInTheLead[i]))
+			if (!FreeForAllGameState->TopScoringPlayers.Contains(PlayersCurrentlyInTheLead[i]))
 			{
 				ACoopGnomeCharacter* Loser = Cast<ACoopGnomeCharacter>(PlayersCurrentlyInTheLead[i]->GetPawn());
 				if (Loser)
@@ -128,10 +128,10 @@ void ACoopGnomeGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AControlle
 void ACoopGnomeGameMode::PlayerLeftGame(class ACoopGnomePlayerState* PlayerLeaving)
 {
 	if (PlayerLeaving == nullptr) return;
-	AFreeForAllGameState* FreeFoeAllGameState = GetGameState<AFreeForAllGameState>();
-	if (FreeFoeAllGameState && FreeFoeAllGameState->TopScoringPlayers.Contains(PlayerLeaving))
+	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
+	if (FreeForAllGameState && FreeForAllGameState->TopScoringPlayers.Contains(PlayerLeaving))
 	{
-		FreeFoeAllGameState->TopScoringPlayers.Remove(PlayerLeaving);
+		FreeForAllGameState->TopScoringPlayers.Remove(PlayerLeaving);
 	}
 	ACoopGnomeCharacter* CharacterLeaving = Cast<ACoopGnomeCharacter>(PlayerLeaving->GetPawn());
 	if (CharacterLeaving)

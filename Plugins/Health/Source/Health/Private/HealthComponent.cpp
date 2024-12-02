@@ -5,7 +5,7 @@
 #include "Health.h"
 
 
-UHealthComponent::UHealthComponent()
+UHealthComponent::UHealthComponent(): ArmorValue(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 

@@ -6,9 +6,7 @@
 #include "WeaponBase.h"
 #include "RangedWeapon.generated.h"
 
-/**
- * 
- */
+
 UCLASS(Blueprintable)
 class WEAPONS_API ARangedWeapon : public AWeaponBase
 {

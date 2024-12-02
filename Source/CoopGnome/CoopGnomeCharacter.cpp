@@ -15,7 +15,13 @@
 #include "InventoryComponent.h"
 #include "GameStates/CoopGnomePlayerState.h"
 #include "CoopGnomeGameMode.h"
+#include "Net/UnrealNetwork.h"
+#include "OnlineSubsystem.h"
+#include "Components/CombatComponent.h"
+#include "Weapon/Weapon.h"
 
+
+#include "Interfaces/OnlineSessionInterface.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -59,6 +65,27 @@ ACoopGnomeCharacter::ACoopGnomeCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat"));
+	Combat->SetIsReplicated(true);
+
+
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+
+	if (OnlineSubsystem)
+	{
+		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15,
+				FColor::Green,
+				FString::Printf(TEXT("Found subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString()));
+		}
+	}
+
 }
 
 void ACoopGnomeCharacter::ServerLeaveGame_Implementation()
@@ -70,6 +97,113 @@ void ACoopGnomeCharacter::ServerLeaveGame_Implementation()
 		CoopGnomeGameMode->PlayerLeftGame(CoopGnomePlayerState);
 	}
 }
+
+void ACoopGnomeCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACoopGnomeCharacter, IsEquippedWeapon);
+	DOREPLIFETIME(ACoopGnomeCharacter, ControlRotation);
+	DOREPLIFETIME(ACoopGnomeCharacter, ActorRotation);
+	DOREPLIFETIME_CONDITION(ACoopGnomeCharacter, OverlappingWeapon, COND_OwnerOnly);
+}
+
+
+bool ACoopGnomeCharacter::IsWeaponEquipped()
+{
+	return true;
+}
+
+bool ACoopGnomeCharacter::IsAiming()
+{
+	return false;
+}
+
+AWeapon* ACoopGnomeCharacter::GetEquippedWeapon()
+{
+	if (Combat == nullptr) return nullptr;
+	return Combat->EquippedWeapon;
+}
+
+void ACoopGnomeCharacter::ServerInteractPressed_Implementation()
+{
+	if(Combat)
+	{
+		Combat->EquipWeapon(OverlappingWeapon);
+	}
+}
+
+void ACoopGnomeCharacter::PlayFireMontage(bool bAiming)
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ACoopGnomeCharacter::PlayReloadMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			SectionName = FName("Rifle");
+			break;
+		case EWeaponType::EWT_RocketLauncher:
+			SectionName = FName("RocketLauncher");
+			break;
+		case EWeaponType::EWT_Pistol:
+			SectionName = FName("Pistol");
+			break;
+		case EWeaponType::EWT_SubmachineGun:
+			SectionName = FName("Pistol");
+			break;
+		case EWeaponType::EWT_Shotgun:
+			SectionName = FName("Shotgun");
+			break;
+		case EWeaponType::EWT_SniperRifle:
+			SectionName = FName("SniperRifle");
+			break;
+		case EWeaponType::EWT_GrenadeLauncher:
+			SectionName = FName("GrenadeLauncher");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ACoopGnomeCharacter::PlayDeathMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+	}
+}
+
+void ACoopGnomeCharacter::PlaySwapMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapMontage)
+	{
+		AnimInstance->Montage_Play(SwapMontage);
+	}
+}
+
 
 void ACoopGnomeCharacter::BeginPlay()
 {
@@ -96,6 +230,16 @@ void ACoopGnomeCharacter::SetupInventory()
 
 	InventoryComponent->OnWeaponEquipped.AddDynamic(this, &ACoopGnomeCharacter::EquipWeapon);
 	InventoryComponent->OnWeaponUnequipped.AddDynamic(this, &ACoopGnomeCharacter::UnequipWeapon);
+}
+
+void ACoopGnomeCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (Combat)
+	{
+		Combat->Character = this;
+	}
 }
 
 void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
@@ -160,6 +304,28 @@ void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
 	}
 }
 
+void ACoopGnomeCharacter::SetOverlappingWeapon(AWeapon* Weapon)
+{
+	if(OverlappingWeapon)
+		OverlappingWeapon->ShowPickupWidget(false);
+	
+	OverlappingWeapon = Weapon;
+
+	if(IsLocallyControlled())
+	{
+		if(OverlappingWeapon)
+			OverlappingWeapon->ShowPickupWidget(true);
+	}
+}
+
+void ACoopGnomeCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+	if(OverlappingWeapon)
+		OverlappingWeapon->ShowPickupWidget(true);
+	if(LastWeapon)
+		LastWeapon->ShowPickupWidget(false);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -195,7 +361,7 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Interact);
 
 		
-		// Interact 
+		// EquipNextWeapon 
 		EnhancedInputComponent->BindAction(EquipNextWeaponAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::EquipNextWeapon);
 
 	}
@@ -238,6 +404,9 @@ void ACoopGnomeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+
+		ControlRotation = GetControlRotation();
+		ActorRotation = GetActorRotation();
 	}
 }
 
@@ -251,6 +420,15 @@ void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 
 void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)
 {
+
+	if(Combat)
+	{
+		if(HasAuthority())
+			Combat->EquipWeapon(OverlappingWeapon);
+		else
+			ServerInteractPressed();
+	}
+	
 	auto InteractComponent = FindComponentByClass<UInteractSphereComponent>();
 	
 	if (!InteractComponent)

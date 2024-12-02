@@ -36,4 +36,13 @@ void AGameHUD::ShowMainInterface()
 
 }
 
+void AGameHUD::ShowInventory()
+{
+}
+
+void AGameHUD::SetHUDPackage(const FHUDPackage& HUDPackage)
+{
+}
+
+
 

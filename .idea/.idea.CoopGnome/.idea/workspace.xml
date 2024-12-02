@@ -12,41 +12,42 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="528914ed-172d-497d-ba43-fb3b180b30fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/MultiplayerSessions.uplugin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Resources/Icon128.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/MultiplayerSessions.Build.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/Menu.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessions.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessionsSubsystem.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/Menu.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/MultiplayerSessions.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/MultiplayerSessionsSubsystem.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameModes/LobbyMode.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameModes/LobbyMode.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameStates/CoopGnomePlayerState.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameStates/CoopGnomePlayerState.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameStates/FreeForAllGameState.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/GameStates/FreeForAllGameState.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Player/CoopGnomePlayerController.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Player/CoopGnomePlayerController.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Types/Announcement.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/UI/ReturnToMainMenu.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/UI/ReturnToMainMenu.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Components/CombatComponent.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Components/CombatComponent.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Types/CollisionState.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Types/CombatState.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Weapon/Weapon.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Weapon/Weapon.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/CoopGnome/Weapon/WeaponTypes.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CoopGnome/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Prince_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Ancient_Undead_Pack/mesh/characters/SK_Ancient_Undead_Prince_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ABP_ALS_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ABP_ALS_Manny.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ALS_Mannequin_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/MannequinSkeleton/ALS_Mannequin_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/MenuMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MenuMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_GnomeCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_ThirdfPersonCharacter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Core/BP_LobbyGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Core/BP_LobbyGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Core/BP_MainGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Core/BP_MainGameMode.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon2.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Blueprints/Weapons/BP_RiffleWeapon3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Project/Maps/MenuMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/Maps/MenuMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Project/UI/MenuWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Project/UI/MenuWidget.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoopGnome.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/CoopGnome.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Health/Source/Health/Private/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Health/Source/Health/Private/HealthComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Inventory/Content/Data/DT_ItemDataTable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Inventory/Content/Data/DT_ItemDataTable.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/Menu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/Menu.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessionsSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessionsSubsystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/RangedWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/RangedWeapon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/Base/CharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/Base/CharacterBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/Base/CharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/Base/CharacterBase.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/CoopGnomeGameMode.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/Player/CoopGnomePlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/Player/CoopGnomePlayerController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/UI/GameHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/UI/GameHUD.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/CoopGnome/UI/GameHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/CoopGnome/UI/GameHUD.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +58,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Plugins/Health/Source/Health/Private/HealthComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Health/Source/Health/Public/HealthComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Intermediate/Build/Win64/UnrealEditor/Inc/Inventory/UHT/Inventory.init.gen.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Intermediate/Build/Win64/UnrealEditor/Inc/Inventory/UHT/InventoryComponent.gen.cpp" root0="SKIP_HIGHLIGHTING" />
@@ -68,11 +70,16 @@
     <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/InventoryWidget.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/ItemTooltipWidget.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Inventory/Source/Inventory/Private/Widget/SplitterWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/Menu.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessionsSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/Menu.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/MultiplayerSessionsSubsystem.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/ObjectReplication/Source/ObjectReplication/Public/ORManagerComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/ObjectReplication/Source/ObjectReplication/Public/ORReplicatedObject.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Private/RangedWeapon.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Plugins/Weapons/Source/Weapons/Public/WeaponBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/AI/EQS/EnvQueryContext_ClosestPlayer.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/CoopGnome/CoopGnome.Build.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/CoopGnomeCharacter.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/CoopGnome/Interaction/InteractSphereComponent.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -797,7 +804,16 @@
       <workItem from="1732005294254" duration="11546000" />
       <workItem from="1732543500631" duration="13250000" />
       <workItem from="1732612450236" duration="10043000" />
-      <workItem from="1732625449046" duration="5256000" />
+      <workItem from="1732625449046" duration="13000000" />
+      <workItem from="1732726421800" duration="12914000" />
+      <workItem from="1732741336502" duration="312000" />
+      <workItem from="1732741711911" duration="24000" />
+      <workItem from="1732741764795" duration="230000" />
+      <workItem from="1732742129396" duration="637000" />
+      <workItem from="1732789914525" duration="12091000" />
+      <workItem from="1732878191608" duration="7014000" />
+      <workItem from="1733050887185" duration="17683000" />
+      <workItem from="1733144909895" duration="5034000" />
     </task>
     <servers />
   </component>

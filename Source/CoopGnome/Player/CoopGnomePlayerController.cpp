@@ -110,8 +110,8 @@ void ACoopGnomePlayerController::HandleMatchHasStarted()
 
 void ACoopGnomePlayerController::HandleCooldown()
 {
-	ACoopGnomeCharacter* BlasterCharacter = Cast<ACoopGnomeCharacter>(GetPawn());
-	if (BlasterCharacter)
+	ACoopGnomeCharacter* GnomeCharacter = Cast<ACoopGnomeCharacter>(GetPawn());
+	if (GnomeCharacter)
 	{
 	}
 }

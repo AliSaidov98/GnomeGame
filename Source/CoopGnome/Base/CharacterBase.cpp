@@ -7,6 +7,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
+#include "WeaponBase.h"
+#include "CoopGnome/Player/CoopGnomePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -20,9 +22,22 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	ConstantWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 }
 
+void ACharacterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	/*if (LagCompensation)
+	{
+		LagCompensation->OwnerCharacter = this;
+		if (Controller)
+		{
+			LagCompensation->OwnerController = Cast<ACoopGnomePlayerController>(Controller);
+		}
+	}*/
+}
 
 void ACharacterBase::PlayMontage(UAnimMontage* Montage, float Rate)
 {

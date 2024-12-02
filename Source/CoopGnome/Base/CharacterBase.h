@@ -39,9 +39,14 @@ class COOPGNOME_API ACharacterBase : public ACharacter
 public:
 
 	ACharacterBase();
+	
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Component")
-	class USkeletalMeshComponent* Weapon;
+	class USkeletalMeshComponent* ConstantWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Component")
+	TArray<class AWeaponBase*> WeaponsBase;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "AI")
 	EFaction Faction;
@@ -70,6 +75,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	FAnimValues AnimValues;
 
+	UPROPERTY()
+	TMap<FName, class UBoxComponent*> HitCollisionBoxes;
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayMontage(UAnimMontage* Montage, float Rate);
 
@@ -110,11 +118,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float CrouchedWalkSpeed = 100.f;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
 	UAnimMontage* DeathMontage;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
 	UAnimMontage* HitReactMontage;
+	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
+	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
+	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
+	UAnimMontage* SwapMontage;
 
 public:
 	// Called every frame
