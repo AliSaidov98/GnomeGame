@@ -171,6 +171,9 @@ private:
 	class UAnimationAsset* FireAnimation;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABulletShell> BulletShell;
+	
+	UPROPERTY(EditAnywhere)
 	int32 Ammo;
 
 	UFUNCTION(Client, Reliable)
@@ -194,8 +197,12 @@ private:
 public:	
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
+
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
+	
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	bool IsEmpty();

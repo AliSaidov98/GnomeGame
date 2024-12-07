@@ -1,4 +1,6 @@
 ﻿#include "Weapon.h"
+
+#include "BulletShell.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "CoopGnome/CoopGnomeCharacter.h"
@@ -291,6 +293,26 @@ void AWeapon::Fire(const FVector& HitTarget)
 	if (FireAnimation)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+	if(BulletShell)
+	{
+		const USkeletalMeshSocket* CasingSocket = GetWeaponMesh()->GetSocketByName(FName("AmmoEject"));
+
+		if(CasingSocket)
+		{
+			FTransform SocketTransform = CasingSocket->GetSocketTransform(GetWeaponMesh());
+		
+			UWorld* World = GetWorld();
+
+			if(World)
+			{
+				World->SpawnActor<ABulletShell>(
+					BulletShell,
+					SocketTransform.GetLocation(),
+					SocketTransform.GetRotation().Rotator()
+				);
+			}
+		}
 	}
 	SpendRound();
 }

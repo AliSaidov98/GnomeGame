@@ -75,10 +75,17 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
-		HitTarget = HitResult.ImpactPoint;
-
 		SetHUDCrosshairs(DeltaTime);
 		InterpFOV(DeltaTime);
+
+		/*if(HitResult.ImpactPoint != FVector::Zero())
+			HitTarget = HitResult.ImpactPoint;
+		else
+		{
+			HitTarget = Character->GetActorRightVector() * 1000;
+		}*/
+
+		
 	}
 }
 
@@ -86,7 +93,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
 	if (bFireButtonPressed)
-	{
+	{		
 		Fire();
 	}
 }
@@ -118,7 +125,7 @@ void UCombatComponent::FireProjectileWeapon()
 {
 	if (EquippedWeapon && Character)
 	{
-		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		//HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
 		if (!Character->HasAuthority()) LocalFire(HitTarget);
 		ServerFire(HitTarget, EquippedWeapon->FireDelay);
 	}
@@ -128,7 +135,7 @@ void UCombatComponent::FireHitScanWeapon()
 {
 	if (EquippedWeapon && Character)
 	{
-		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		//HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
 		if (!Character->HasAuthority()) LocalFire(HitTarget);
 		ServerFire(HitTarget, EquippedWeapon->FireDelay);
 	}
@@ -274,7 +281,9 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("hand_rSocket"));
 	if (HandSocket)
 	{
+		FVector ActorScale = ActorToAttach->GetActorScale();
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
+		ActorToAttach->SetActorRelativeScale3D(ActorScale);
 	}
 }
 
@@ -523,18 +532,28 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		if (Character)
 		{
 			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 5.f);
 		}
 
 		FVector End = Start + CrosshairWorldDirection * TRACE_LENGTH;
-
+		
 		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
 			Start,
 			End,
 			ECollisionChannel::ECC_Visibility
 		);
-		HUDPackage.CrosshairsColor = FLinearColor::White;
+
+		if(TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::Red;
+		}
+		else
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::White;
+		}
+
+		HitTarget = TraceHitResult.ImpactPoint != FVector::Zero() ? TraceHitResult.ImpactPoint : End;
 	}
 }
 
@@ -646,11 +665,11 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 }
 
 bool UCombatComponent::CanFire()
-{
-	if (EquippedWeapon == nullptr) return false;
-	if (!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun) return true;
-	if (bLocallyReloading) return false;
-	return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::Unoccupied;
+{return true;
+	// if (EquippedWeapon == nullptr) return false;
+	// if (!EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun) return true;
+	// if (bLocallyReloading) return false;
+	// return !EquippedWeapon->IsEmpty() && bCanFire && CombatState == ECombatState::Unoccupied;
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()

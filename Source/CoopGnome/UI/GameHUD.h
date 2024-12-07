@@ -34,6 +34,12 @@ public:
 	void ShowInventory();
 	void SetHUDPackage(const FHUDPackage& HUDPackage);
 
+	virtual void DrawHUD() override;
+	void DrawCrosshair(UTexture2D* Texture, FVector2d ViewportCenter, FVector2d Spread, FLinearColor CrosshairColor);
+
+	UPROPERTY(EditAnywhere)
+	float CrosshairSpreadMax = 16;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -42,5 +48,7 @@ protected:
 
 private:
 	TObjectPtr<UMainInterfaceWidget> InterfaceWidget;
-
+	
+	FHUDPackage HUDPackage;
+	
 };

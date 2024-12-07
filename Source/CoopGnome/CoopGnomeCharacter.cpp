@@ -22,6 +22,7 @@
 
 
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Types/CollisionState.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -69,7 +70,16 @@ ACoopGnomeCharacter::ACoopGnomeCharacter()
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat"));
 	Combat->SetIsReplicated(true);
 
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
+	NetUpdateFrequency = 100;
+	MinNetUpdateFrequency = 33;
+	
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 
 	if (OnlineSubsystem)
@@ -105,6 +115,8 @@ void ACoopGnomeCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ACoopGnomeCharacter, IsEquippedWeapon);
 	DOREPLIFETIME(ACoopGnomeCharacter, ControlRotation);
 	DOREPLIFETIME(ACoopGnomeCharacter, ActorRotation);
+	DOREPLIFETIME(ACoopGnomeCharacter, TurningInPlace);
+	DOREPLIFETIME(ACoopGnomeCharacter, AO_YawRep);
 	DOREPLIFETIME_CONDITION(ACoopGnomeCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
@@ -142,7 +154,7 @@ void ACoopGnomeCharacter::PlayFireMontage(bool bAiming)
 	{
 		AnimInstance->Montage_Play(FireWeaponMontage);
 		FName SectionName;
-		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		SectionName = bAiming ? FName("RifleAim") : FName("Rifle");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -204,6 +216,25 @@ void ACoopGnomeCharacter::PlaySwapMontage()
 	}
 }
 
+void ACoopGnomeCharacter::PlayHitReactMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		//FName SectionName;
+		//SectionName = FName("RifleAim") : FName("Rifle");
+		//AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ACoopGnomeCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
+}
+
 
 void ACoopGnomeCharacter::BeginPlay()
 {
@@ -217,6 +248,28 @@ void ACoopGnomeCharacter::OnPlayerStateInitialized()
 {
 	CoopGnomePlayerState->AddToScore(0.f);
 	CoopGnomePlayerState->AddToDefeats(0);
+}
+
+void ACoopGnomeCharacter::HideCameraIfCharacterClose()
+{
+	if(!IsLocallyControlled()) return;
+
+	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
+	{
+		GetMesh()->SetVisibility(false);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+	}
 }
 
 void ACoopGnomeCharacter::SetupInventory()
@@ -318,6 +371,39 @@ void ACoopGnomeCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
+void ACoopGnomeCharacter::SetTurningInPlace(ETurningInPlace TurningType)
+{
+	TurningInPlace = TurningType;
+}
+
+FVector ACoopGnomeCharacter::GetHitTarget() const
+{
+	if(Combat == nullptr) return FVector();
+
+	return Combat->HitTarget;
+}
+
+void ACoopGnomeCharacter::TurnInPlace(float DeltaTime, float AO_Yaw)
+{
+	AO_YawRep = AO_Yaw;
+
+	if(HasAuthority())
+	{
+		ControlRotation = GetControlRotation();
+		ActorRotation = GetActorRotation();
+		
+		if(AO_YawRep > 85.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_Right;
+		}
+	
+		else if(AO_YawRep < -85.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_Left;
+		}
+	}
+}
+
 void ACoopGnomeCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
 	if(OverlappingWeapon)
@@ -325,7 +411,6 @@ void ACoopGnomeCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	if(LastWeapon)
 		LastWeapon->ShowPickupWidget(false);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -355,7 +440,8 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Look);
 		
 		// Attack
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ACoopGnomeCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &ACoopGnomeCharacter::AttackReleased);
 		
 		// Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ACoopGnomeCharacter::Interact);
@@ -405,17 +491,31 @@ void ACoopGnomeCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 
-		ControlRotation = GetControlRotation();
-		ActorRotation = GetActorRotation();
+		
+		HideCameraIfCharacterClose();
 	}
 }
 
 void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 {
+
+	if(Combat)
+		Combat->FireButtonPressed(true);
+	
 	if(!EquippedWeapon)
 		return;
 	
 	EquippedWeapon->Attack();
+}
+
+void ACoopGnomeCharacter::AttackReleased(const FInputActionValue& Value)
+{
+	if(Combat)
+		Combat->FireButtonPressed(false);
+	/*if(!EquippedWeapon)
+		return;
+	
+	EquippedWeapon->Attack();*/
 }
 
 void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)

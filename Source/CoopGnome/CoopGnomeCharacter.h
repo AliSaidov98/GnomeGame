@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "OnlineSubsystem.h"
 #include "Base/CharacterBase.h"
+#include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "Logging/LogMacros.h"
+#include "Types/TurningInPlace.h"
 #include "CoopGnomeCharacter.generated.h"
 
 class USpringArmComponent;
@@ -23,7 +25,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
 
 UCLASS(config=Game)
-class ACoopGnomeCharacter : public ACharacterBase
+class ACoopGnomeCharacter : public ACharacterBase, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 
@@ -89,6 +91,7 @@ protected:
 			
 	/** Called for looking input */
 	void Attack(const FInputActionValue& Value);
+	void AttackReleased(const FInputActionValue& Value);
 			
 	/** Called for interact input */
 	void Interact(const FInputActionValue& Value);
@@ -128,9 +131,22 @@ public:
 
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const {return TurningInPlace;}
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetTurningInPlace(ETurningInPlace TurningType);
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetHitTarget() const;
+	
+	UFUNCTION(BlueprintCallable)
+	void TurnInPlace(float DeltaTime, float AO_Yaw);
+	
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
+
+	UFUNCTION(BlueprintCallable)
 	AWeapon* GetEquippedWeapon();
 
 	UFUNCTION(Server, Reliable)
@@ -140,9 +156,17 @@ public:
 	void PlayReloadMontage();
 	void PlayDeathMontage();
 	void PlaySwapMontage();
+	void PlayHitReactMontage();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
 
 	bool bFinishedSwapping = false;
 
+	void HideCameraIfCharacterClose();
+
+	UPROPERTY(EditAnywhere)
+	float CameraThreshold = 50;
 
 private:
 	void SetupInventory();
@@ -153,6 +177,12 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
+
+	UPROPERTY(Replicated)
+	ETurningInPlace TurningInPlace;
+
+	UPROPERTY(Replicated)
+	float AO_YawRep;
 	
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
@@ -169,5 +199,7 @@ private:
 
 public:
 	TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> OnlineSessionInterface;
+
+	
 };
 
