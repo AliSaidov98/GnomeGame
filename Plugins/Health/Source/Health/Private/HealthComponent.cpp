@@ -2,8 +2,16 @@
 
 
 #include "HealthComponent.h"
-#include "Health.h"
+#include "Health.h"/*
+#include "../../../../../Source/CoopGnome/CoopGnomeCharacter.h"
+#include "../../../../../Source/CoopGnome/GameModes/CoopGnomeGameMode.h"
+#include "../../../../../Source/CoopGnome/Player/CoopGnomePlayerController.h"*/
+#include "Net/UnrealNetwork.h"
 
+/*
+class ACoopGnomeGameMode;
+class ACoopGnomeCharacter;
+class ACoopGnomePlayerController;*/
 
 UHealthComponent::UHealthComponent(): ArmorValue(0)
 {
@@ -20,8 +28,15 @@ void UHealthComponent::BeginPlay()
 	if (!GetOwner())
 		return;
 
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeAnyDamage);
+	if(GetOwner()->HasAuthority())
+		GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeAnyDamage);
+}
 
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UHealthComponent, CurrentHealth);
 }
 
 
@@ -40,7 +55,9 @@ void UHealthComponent::ReceiveDamage(float Damage)
 {
 	if (bDead)
 		return;
-
+	
+	UE_LOG(LogHealth, Warning, TEXT("ReceiveDamage"));
+	
 	if (Damage <= 0)
 	{
 		UE_LOG(LogHealth, Warning, TEXT("UHealthComponent::ReceiveDamage(): Damage < 0"));
@@ -55,7 +72,7 @@ void UHealthComponent::ReceiveDamage(float Damage)
 	CurrentHealth = FMath::Max(0.f, (CurrentHealth - Damage));
 
 	OnHealthChange.Broadcast(CurrentHealth, MaxHealth);
-
+	
 	if (FMath::IsNearlyEqual(CurrentHealth, 0.f, 0.01f))
 	{
 		Death();
@@ -92,12 +109,30 @@ void UHealthComponent::SetMaxHealth(float NewMaxHealth)
 
 }
 
+void UHealthComponent::OnRep_CurrentHealth()
+{
+	UE_LOG(LogHealth, Warning, TEXT("OnRep_CurrentHealth"));
+		
+	OnHealthChange.Broadcast(CurrentHealth, MaxHealth);
+}
+
 void UHealthComponent::Death()
 {
 	bDead = true;
 
 	OnDeath.Broadcast();
 
+	
+	/*
+	ACoopGnomeGameMode* GnomeGameMode = GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>();
+
+	if(!GnomeGameMode) return;
+
+	ACoopGnomeCharacter* Character = Cast<ACoopGnomeCharacter>(GetOwner());
+	ACoopGnomePlayerController* GnomeGameController = Cast<ACoopGnomePlayerController>(Character->GetController());
+	ACoopGnomePlayerController* AttackerController = Cast<ACoopGnomePlayerController>(Character->GetInstigator());
+	
+	GnomeGameMode->PlayerEliminated(Character, GnomeGameController, AttackerController);*/
 	if (bDestroyActorOnDeath)
 		GetOwner()->Destroy();
 }

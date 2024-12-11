@@ -11,9 +11,12 @@ void UHealthWidget::NativeConstruct()
     Super::NativeConstruct();
 
     APawn* PlayerPawn = GetOwningPlayerPawn();
+    	
     if (!PlayerPawn)
         return;
-
+    
+    UE_LOG(LogTemp, Warning, TEXT("UHealthWidget::NativeConstruct ::::: %s"), *PlayerPawn->GetName());
+	
     auto HealthComponent = PlayerPawn->FindComponentByClass<UHealthComponent>();
     if (!HealthComponent)
         return;
@@ -35,7 +38,7 @@ void UHealthWidget::UpdateHealth(float CurrentHealth, float MaxHealth)
 
     HealthProgressBar->SetPercent(HealthPercent);
 
-    HealthValueText->SetText(FText::AsNumber(HealthPercent));
+    HealthValueText->SetText(FText::AsNumber(HealthPercent * 100));
 }
 
 

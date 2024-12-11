@@ -83,6 +83,8 @@ private:
 	UPROPERTY()
 	class ACoopGnomeGameMode* CoopGnomeGameMode;
 	
+	UPROPERTY()
+	class AGameHUD* GameHUD;
 	/** 
 	* Return to main menu
 	*/

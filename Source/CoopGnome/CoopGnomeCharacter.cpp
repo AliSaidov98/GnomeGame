@@ -14,7 +14,8 @@
 #include "Interaction/InteractSphereComponent.h"
 #include "InventoryComponent.h"
 #include "GameStates/CoopGnomePlayerState.h"
-#include "CoopGnomeGameMode.h"
+#include "GameModes/CoopGnomeGameMode.h"
+#include "HealthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "OnlineSubsystem.h"
 #include "Components/CombatComponent.h"
@@ -137,12 +138,17 @@ AWeapon* ACoopGnomeCharacter::GetEquippedWeapon()
 	return Combat->EquippedWeapon;
 }
 
-void ACoopGnomeCharacter::ServerInteractPressed_Implementation()
+void ACoopGnomeCharacter::ServerEquipWeaponPressed_Implementation()
 {
 	if(Combat)
 	{
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
+}
+
+void ACoopGnomeCharacter::ServerInteractPressed_Implementation()
+{
+	
 }
 
 void ACoopGnomeCharacter::PlayFireMontage(bool bAiming)
@@ -230,17 +236,20 @@ void ACoopGnomeCharacter::PlayHitReactMontage()
 	}
 }
 
-void ACoopGnomeCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
-}
-
-
 void ACoopGnomeCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	
+	auto HealthComponent = FindComponentByClass<UHealthComponent>();
+	if (!HealthComponent)
+		return;
 
+	HealthComponent->OnHealthChange.AddDynamic(this, &ACoopGnomeCharacter::UpdateHealth);
+    
+	if(HasAuthority())
+		OnTakeAnyDamage.AddDynamic(this, &ACoopGnomeCharacter::TakeAnyDamage);
+	
 	SetupInventory();
 }
 
@@ -295,12 +304,24 @@ void ACoopGnomeCharacter::PostInitializeComponents()
 	}
 }
 
+void ACoopGnomeCharacter::Elim()
+{
+	
+}
+
+void ACoopGnomeCharacter::Destroyed()
+{
+	UE_LOG(LogTemp, Warning, TEXT(":: Destroyyyy ::"));
+	//Super::Destroyed();
+}
+
 void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 {
-	if (EquippedWeapon)
+	/*
+	if (OverlappingWeapon)
 	{
-		EquippedWeapon->Destroy();
-		EquippedWeapon = nullptr;
+		OverlappingWeapon->Destroy();
+		OverlappingWeapon = nullptr;
 	}
 	
 	FItemStruct WeaponItem;
@@ -316,11 +337,20 @@ void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 		return;
 	}
 
+	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	EquippedWeapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponItem.WeaponClass, GetActorTransform(), SpawnParams);
+	OverlappingWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponItem.WeaponClass, GetActorTransform(), SpawnParams);
 	
-	if (!EquippedWeapon)
+	if(Combat && OverlappingWeapon)
+	{
+		if(HasAuthority())
+			Combat->EquipWeapon(OverlappingWeapon);
+		else
+			ServerEquipWeaponPressed();
+	}*/
+	
+	/*if (!EquippedWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): EquippedWeapon is not valid!"));
 		return;
@@ -329,12 +359,12 @@ void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
 	EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachSocketName);
 	EquippedWeapon->OwnerCharacter = this;
 	
-	IsEquippedWeapon = true;
+	IsEquippedWeapon = true;*/
 }
 
 void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
 {
-	if (!EquippedWeapon)
+	if (!OverlappingWeapon)
 		return;
 
 	FItemStruct WeaponItem;
@@ -349,10 +379,10 @@ void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
 		return;
 	}
 
-	if (EquippedWeapon.GetClass() == WeaponItem.WeaponClass)
+	if (OverlappingWeapon.GetClass() == WeaponItem.WeaponClass)
 	{
-		EquippedWeapon->Destroy();
-		EquippedWeapon = nullptr;
+		OverlappingWeapon->Destroy();
+		OverlappingWeapon = nullptr;
 		IsEquippedWeapon = false;
 	}
 }
@@ -392,7 +422,7 @@ void ACoopGnomeCharacter::TurnInPlace(float DeltaTime, float AO_Yaw)
 		ControlRotation = GetControlRotation();
 		ActorRotation = GetActorRotation();
 		
-		if(AO_YawRep > 85.f)
+		if(AO_YawRep > 45.f)
 		{
 			TurningInPlace = ETurningInPlace::ETIP_Right;
 		}
@@ -457,6 +487,17 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	}
 }
 
+void ACoopGnomeCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
+{
+	PlayHitReactMontage();
+}
+
+void ACoopGnomeCharacter::UpdateHealth(float CurrentHealth, float MaxHealth)
+{
+	PlayHitReactMontage();
+}
+
 void ACoopGnomeCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -502,10 +543,10 @@ void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 	if(Combat)
 		Combat->FireButtonPressed(true);
 	
-	if(!EquippedWeapon)
+	/*if(!EquippedWeapon)
 		return;
 	
-	EquippedWeapon->Attack();
+	EquippedWeapon->Attack();*/
 }
 
 void ACoopGnomeCharacter::AttackReleased(const FInputActionValue& Value)
@@ -518,18 +559,22 @@ void ACoopGnomeCharacter::AttackReleased(const FInputActionValue& Value)
 	EquippedWeapon->Attack();*/
 }
 
-void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)
+void ACoopGnomeCharacter::EquipCombatWeapon()
 {
-
 	if(Combat)
 	{
 		if(HasAuthority())
 			Combat->EquipWeapon(OverlappingWeapon);
 		else
-			ServerInteractPressed();
+			ServerEquipWeaponPressed();
 	}
+}
+
+void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)
+{
+	EquipCombatWeapon();
 	
-	auto InteractComponent = FindComponentByClass<UInteractSphereComponent>();
+	/*auto InteractComponent = FindComponentByClass<UInteractSphereComponent>();
 	
 	if (!InteractComponent)
 	{
@@ -543,7 +588,7 @@ void ACoopGnomeCharacter::Interact(const FInputActionValue& Value)
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("INTERACT SUCCESS")));
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("INTERACT  %hhd "), bInteracted));
-
+	*/
 }
 
 void ACoopGnomeCharacter::EquipNextWeapon(const FInputActionValue& Value)
@@ -559,7 +604,7 @@ void ACoopGnomeCharacter::EquipNextWeapon(const FInputActionValue& Value)
 		if (!Item.WeaponClass)
 			continue;
 
-		if (!EquippedWeapon || Item.WeaponClass != EquippedWeapon.GetClass())
+		if (!OverlappingWeapon || Item.WeaponClass != OverlappingWeapon.GetClass())
 		{
 			EquipWeapon(Item.Name);
 			return;

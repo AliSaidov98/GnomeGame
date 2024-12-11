@@ -26,7 +26,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -49,6 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMaxHealth(float NewMaxHealth);
 
+	UFUNCTION()
+	void OnRep_CurrentHealth();
+
 private:
 	void Death();
 
@@ -58,6 +62,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Death", meta = (AllowPrivateAccess = "true"))
 	bool bDestroyActorOnDeath = false;
 
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth, VisibleAnywhere, Category = "Health")
 	float CurrentHealth;
 
 	UPROPERTY(EditAnywhere, Category = "Health", meta = (AllowPrivateAccess = "true", ClampMin = 0, ClampMax = 1))

@@ -9,9 +9,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/Image.h"
 #include "CoopGnome/CoopGnomeCharacter.h"
-#include "CoopGnome/CoopGnomeGameMode.h"
+#include "CoopGnome/GameModes/CoopGnomeGameMode.h"
 #include "CoopGnome/GameStates/CoopGnomePlayerState.h"
 #include "CoopGnome/Types/Announcement.h"
+#include "CoopGnome/UI/GameHUD.h"
 #include "CoopGnome/UI/ReturnToMainMenu.h"
 
 void ACoopGnomePlayerController::SetHUDHealth(float Health, float MaxHealth)
@@ -124,6 +125,9 @@ void ACoopGnomePlayerController::BroadcastElim(APlayerState* Attacker, APlayerSt
 void ACoopGnomePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	GameHUD = Cast<AGameHUD>(GetHUD());
+	
 	ServerCheckMatchState();
 }
 

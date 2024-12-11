@@ -9,7 +9,10 @@ void AGameHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    ShowMainInterface();
+    FTimerHandle UnusedHandle;
+    GetWorldTimerManager().SetTimer(
+        UnusedHandle, this, &AGameHUD::ShowMainInterface, 1, false);
+    //ShowMainInterface();
 }
 
 void AGameHUD::ShowMainInterface()

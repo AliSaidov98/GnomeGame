@@ -80,6 +80,8 @@ public:
 	FOnLeftGame OnLeftGame;
 
 	virtual void PostInitializeComponents() override;
+	void Elim();
+	virtual void Destroyed() override;
 	
 protected:
 
@@ -92,7 +94,8 @@ protected:
 	/** Called for looking input */
 	void Attack(const FInputActionValue& Value);
 	void AttackReleased(const FInputActionValue& Value);
-			
+	void EquipCombatWeapon();
+
 	/** Called for interact input */
 	void Interact(const FInputActionValue& Value);
 	
@@ -101,6 +104,12 @@ protected:
 	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION()
+	void UpdateHealth(float CurrentHealth, float MaxHealth);
 	
 	// To add mapping context
 	virtual void BeginPlay() override;;
@@ -151,15 +160,15 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteractPressed();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerEquipWeaponPressed();
 
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayDeathMontage();
 	void PlaySwapMontage();
 	void PlayHitReactMontage();
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
 
 	bool bFinishedSwapping = false;
 
@@ -176,7 +185,7 @@ private:
 	void UnequipWeapon(FString WeaponName);
 
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
-	class AWeapon* OverlappingWeapon;
+	TObjectPtr<AWeapon> OverlappingWeapon;
 
 	UPROPERTY(Replicated)
 	ETurningInPlace TurningInPlace;
@@ -186,8 +195,6 @@ private:
 	
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
-
-	TObjectPtr<AWeaponBase> EquippedWeapon;
 
 	UInventoryComponent* InventoryComponent;
 	
