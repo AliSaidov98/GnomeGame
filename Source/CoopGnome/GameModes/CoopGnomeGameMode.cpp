@@ -52,10 +52,12 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 	class ACoopGnomePlayerController* VictimController, ACoopGnomePlayerController* AttackerController)
 {
 	if (AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
+	
 	if (VictimController == nullptr || VictimController->PlayerState == nullptr) return;
+	
 	ACoopGnomePlayerState* AttackerPlayerState = AttackerController ? Cast<ACoopGnomePlayerState>(AttackerController->PlayerState) : nullptr;
 	ACoopGnomePlayerState* VictimPlayerState = VictimController ? Cast<ACoopGnomePlayerState>(VictimController->PlayerState) : nullptr;
-
+	
 	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
 
 	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && FreeForAllGameState)
@@ -92,6 +94,7 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 	if (VictimPlayerState)
 	{
 		VictimPlayerState->AddToDefeats(1);
+		VictimPlayerState->SetAnnouncementMessage("You were eliminated");
 	}
 
 	if (ElimmedCharacter)

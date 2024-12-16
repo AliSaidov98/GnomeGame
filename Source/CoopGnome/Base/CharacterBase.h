@@ -39,6 +39,8 @@ class COOPGNOME_API ACharacterBase : public ACharacter
 public:
 
 	ACharacterBase();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void PostInitializeComponents() override;
 
@@ -54,7 +56,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "AI")
 	ECombatRole CombatRole;
 
-	UPROPERTY(BlueprintReadOnly, Category="AI")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category="AI")
 	bool Dead = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="AI")
@@ -94,7 +96,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Val);
@@ -119,10 +121,10 @@ protected:
 	float CrouchedWalkSpeed = 100.f;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
-	UAnimMontage* DeathMontage;
+	UAnimMontage* HitReactMontage;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
-	UAnimMontage* HitReactMontage;
+	UAnimMontage* ElimMontage;
 	
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Combat")
 	UAnimMontage* FireWeaponMontage;

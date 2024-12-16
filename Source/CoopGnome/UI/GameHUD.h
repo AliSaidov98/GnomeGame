@@ -40,14 +40,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16;
 	
+	
+	TObjectPtr<UMainInterfaceWidget> InterfaceWidget;
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMainInterfaceWidget> InterfaceWidgetClass;
 
+	
+	
 private:
-	TObjectPtr<UMainInterfaceWidget> InterfaceWidget;
+	
 	
 	FHUDPackage HUDPackage;
 	

@@ -10,6 +10,7 @@
 #include "WeaponBase.h"
 #include "CoopGnome/Player/CoopGnomePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -23,6 +24,14 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	ConstantWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+}
+
+
+void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ACharacterBase, Dead);
 }
 
 void ACharacterBase::PostInitializeComponents()
@@ -59,7 +68,7 @@ void ACharacterBase::BeginPlay()
 	UpdateWidgetRef();
 }
 
-
+/*
 float ACharacterBase::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
@@ -89,9 +98,9 @@ float ACharacterBase::TakeDamage(float Damage, struct FDamageEvent const& Damage
 
 	if (Chr->Health <= 0.f)
 	{
-		PlayMontage(DeathMontage, 1.f);
+		//PlayMontage(DeathMontage, 1.f);
 		GetMesh()->bIgnoreRadialForce = true;
-		PlayMontage(DeathMontage, 2.f);
+		//PlayMontage(DeathMontage, 2.f);
 		GetMesh()->SetSimulatePhysics(true);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Dead = true;
@@ -109,7 +118,7 @@ float ACharacterBase::TakeDamage(float Damage, struct FDamageEvent const& Damage
 
 	PlayMontage(HitReactMontage, 1.f);
 	return 0.f;
-}
+}*/
 
 
 void ACharacterBase::MoveForward(float Val)

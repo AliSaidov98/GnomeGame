@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "OnlineSubsystem.h"
 #include "Base/CharacterBase.h"
+#include "Components/TimelineComponent.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "Logging/LogMacros.h"
 #include "Types/TurningInPlace.h"
@@ -80,11 +81,59 @@ public:
 	FOnLeftGame OnLeftGame;
 
 	virtual void PostInitializeComponents() override;
-	void Elim();
-	virtual void Destroyed() override;
-	
-protected:
 
+	/*
+	 *Death
+	 *
+	 **/
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ElimMulticast();
+
+	UFUNCTION()
+	void Elim_Server();
+	
+	FTimerHandle ElimTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+
+	void ElimTimerFinished();
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NewPossess();
+
+	/*
+	 *Dissolve Effect
+	 *
+	 **/
+
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* DissolveTimeline;
+	
+	FOnTimelineFloat DissolveTrack;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* DissolveCurve;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<UMaterialInstanceDynamic*> DynamicDissolveMaterialInstance;
+	
+	UPROPERTY(EditAnywhere)
+	TArray<UMaterialInstance*> DissolveMaterialInstance;
+
+	UFUNCTION()
+	void UpdateDissolveMaterial(float DissolveValue);
+	
+	UFUNCTION()
+	void StartDissolve();
+	
+	void SetupDissolve();
+	
+protected: 
+  
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -110,9 +159,14 @@ protected:
 
 	UFUNCTION()
 	void UpdateHealth(float CurrentHealth, float MaxHealth);
+
+	//Poll for relevant classes and initialize HUD
+	void PollInit();
 	
 	// To add mapping context
 	virtual void BeginPlay() override;;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<AWeaponBase> DefaultWeaponClass;
@@ -146,6 +200,9 @@ public:
 	FORCEINLINE void SetTurningInPlace(ETurningInPlace TurningType);
 
 	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsElimmed() const {return Dead;}
+	
+	UFUNCTION(BlueprintCallable)
 	FVector GetHitTarget() const;
 	
 	UFUNCTION(BlueprintCallable)
@@ -169,6 +226,7 @@ public:
 	void PlayDeathMontage();
 	void PlaySwapMontage();
 	void PlayHitReactMontage();
+	void PlayElimMontage();
 
 	bool bFinishedSwapping = false;
 

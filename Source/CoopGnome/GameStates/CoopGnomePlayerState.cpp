@@ -10,6 +10,7 @@ void ACoopGnomePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACoopGnomePlayerState, Defeats);
+	DOREPLIFETIME(ACoopGnomePlayerState, AnnouncementMessage);
 }
 
 void ACoopGnomePlayerState::OnRep_Score()
@@ -38,6 +39,52 @@ void ACoopGnomePlayerState::OnRep_Defeats()
 			Controller->SetHUDDefeats(Defeats);
 		}
 	}
+}
+
+void ACoopGnomePlayerState::OnRep_AnnouncementMessage()
+{
+	Character = Character == nullptr ? Cast<ACoopGnomeCharacter>(GetPawn()) : Character;
+	if (Character)
+	{
+		Controller = Controller == nullptr ? Cast<ACoopGnomePlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDAnnouncementCountdown(AnnouncementMessage);
+			
+			/*if(Controller->IsLocalController())
+			{
+				FTimerHandle TimerHandle;
+				GetWorldTimerManager().SetTimer(TimerHandle, this, &ACoopGnomePlayerState::ClearAnnouncement, 1, true);
+			}*/
+		}
+	}
+}
+
+void ACoopGnomePlayerState::SetAnnouncementMessage(FString Announcement)
+{
+	AnnouncementMessage = Announcement;
+	
+	Character = Character == nullptr ? Cast<ACoopGnomeCharacter>(GetPawn()) : Character;
+	if (Character)
+	{
+		Controller = Controller == nullptr ? Cast<ACoopGnomePlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDAnnouncementCountdown(Announcement);
+			
+			/*if(Controller->IsLocalController())
+			{
+				FTimerHandle TimerHandle;
+				GetWorldTimerManager().SetTimer(TimerHandle, this, &ACoopGnomePlayerState::ClearAnnouncement, 1, true);
+			}*/
+		}
+	}
+}
+
+
+void ACoopGnomePlayerState::ClearAnnouncement()
+{
+	AnnouncementMessage = "";
 }
 
 void ACoopGnomePlayerState::AddToScore(float ScoreAmount)

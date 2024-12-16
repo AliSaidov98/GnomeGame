@@ -29,8 +29,10 @@ void AGameHUD::ShowMainInterface()
 
     if (InterfaceWidget)
     {
-        InterfaceWidget->SetVisibility(ESlateVisibility::Visible);
-        return;
+        /*InterfaceWidget->SetVisibility(ESlateVisibility::Visible);
+        return;*/
+        InterfaceWidget->RemoveFromParent();
+        InterfaceWidget->Destruct();
     }
 
     InterfaceWidget = CreateWidget<UMainInterfaceWidget>(PlayerController, InterfaceWidgetClass);

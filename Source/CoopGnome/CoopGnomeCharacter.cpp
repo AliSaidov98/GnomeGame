@@ -19,10 +19,12 @@
 #include "Net/UnrealNetwork.h"
 #include "OnlineSubsystem.h"
 #include "Components/CombatComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Weapon/Weapon.h"
 
 
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Player/CoopGnomePlayerController.h"
 #include "Types/CollisionState.h"
 
 
@@ -33,6 +35,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 ACoopGnomeCharacter::ACoopGnomeCharacter()
 {
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -45,6 +49,7 @@ ACoopGnomeCharacter::ACoopGnomeCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
+	
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
@@ -80,6 +85,8 @@ ACoopGnomeCharacter::ACoopGnomeCharacter()
 
 	NetUpdateFrequency = 100;
 	MinNetUpdateFrequency = 33;
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 	
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 
@@ -120,7 +127,6 @@ void ACoopGnomeCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ACoopGnomeCharacter, AO_YawRep);
 	DOREPLIFETIME_CONDITION(ACoopGnomeCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
-
 
 bool ACoopGnomeCharacter::IsWeaponEquipped()
 {
@@ -206,11 +212,11 @@ void ACoopGnomeCharacter::PlayReloadMontage()
 
 void ACoopGnomeCharacter::PlayDeathMontage()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	/*UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && DeathMontage)
 	{
 		AnimInstance->Montage_Play(DeathMontage);
-	}
+	}*/
 }
 
 void ACoopGnomeCharacter::PlaySwapMontage()
@@ -224,7 +230,7 @@ void ACoopGnomeCharacter::PlaySwapMontage()
 
 void ACoopGnomeCharacter::PlayHitReactMontage()
 {
-	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	if (Combat == nullptr /*|| Combat->EquippedWeapon == nullptr*/) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && HitReactMontage)
@@ -233,6 +239,15 @@ void ACoopGnomeCharacter::PlayHitReactMontage()
 		//FName SectionName;
 		//SectionName = FName("RifleAim") : FName("Rifle");
 		//AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ACoopGnomeCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage);
 	}
 }
 
@@ -246,11 +261,19 @@ void ACoopGnomeCharacter::BeginPlay()
 		return;
 
 	HealthComponent->OnHealthChange.AddDynamic(this, &ACoopGnomeCharacter::UpdateHealth);
+	HealthComponent->OnDeath.AddDynamic(this, &ACoopGnomeCharacter::Elim_Server);
     
 	if(HasAuthority())
 		OnTakeAnyDamage.AddDynamic(this, &ACoopGnomeCharacter::TakeAnyDamage);
 	
 	SetupInventory();
+}
+
+void ACoopGnomeCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	PollInit();
 }
 
 void ACoopGnomeCharacter::OnPlayerStateInitialized()
@@ -286,7 +309,7 @@ void ACoopGnomeCharacter::SetupInventory()
 	InventoryComponent = FindComponentByClass<UInventoryComponent>();
 	if (!InventoryComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::SetupInventory(): InventoryComponent is not valid!"));		
+		//UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::SetupInventory(): InventoryComponent is not valid!"));		
 		return;
 	}
 
@@ -304,15 +327,136 @@ void ACoopGnomeCharacter::PostInitializeComponents()
 	}
 }
 
-void ACoopGnomeCharacter::Elim()
+void ACoopGnomeCharacter::Elim_Server()
 {
+	if(Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Dropped();
+	}
 	
+	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
+
+	if(!CoopGnomeGameMode) return;
+	
+	auto HealthComponent = FindComponentByClass<UHealthComponent>();
+	if (!HealthComponent)
+		return;
+
+	ACoopGnomePlayerController* CharacterPlayerController = Cast<ACoopGnomePlayerController>(Controller);
+	ACoopGnomePlayerController* AttackerController = Cast<ACoopGnomePlayerController>(HealthComponent->Instigator);
+	
+	CoopGnomeGameMode->PlayerEliminated(this, CharacterPlayerController, AttackerController);
+
+	ElimMulticast();
+
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&ACoopGnomeCharacter::ElimTimerFinished,
+		ElimDelay
+	);
 }
 
-void ACoopGnomeCharacter::Destroyed()
+void ACoopGnomeCharacter::ElimMulticast_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT(":: Destroyyyy ::"));
-	//Super::Destroyed();
+	Dead = true;
+	
+	//PlayElimMontage();
+
+	SetupDissolve();
+
+	//Disable character movement
+
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	
+	if(GetLocalViewingPlayerController())
+	{
+		//DisableInput(GetLocalViewingPlayerController());
+	}
+	
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	SetActorEnableCollision(true);
+	GetMesh()->SetAllBodiesSimulatePhysics(true);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->WakeAllRigidBodies();
+	GetMesh()->bBlendPhysics = true;
+	
+	//Disable collision
+	
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ACoopGnomeCharacter::ElimTimerFinished()
+{
+	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
+
+	if(CoopGnomeGameMode)
+		CoopGnomeGameMode->RequestRespawn(this, Controller);
+}
+
+void ACoopGnomeCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	CoopGnomePlayerState = CoopGnomePlayerState == nullptr ? Cast<ACoopGnomePlayerState>(GetPlayerState()) : CoopGnomePlayerState;
+
+	if(CoopGnomePlayerState)
+		CoopGnomePlayerState->ClearAnnouncement();
+	
+	NewPossess();
+}
+
+void ACoopGnomeCharacter::NewPossess_Implementation()
+{
+	if(!IsLocallyControlled()) return;
+	
+	ACoopGnomePlayerController* PlayerController = Cast<ACoopGnomePlayerController>(Controller);
+	
+	if(!PlayerController->GetHUD()) return;
+	Cast<AGameHUD>(PlayerController->GetHUD())->ShowMainInterface();
+
+}
+
+void ACoopGnomeCharacter::SetupDissolve()
+{
+	if(DissolveMaterialInstance.IsValidIndex(0))
+	{
+		for (int i = 0; i < DissolveMaterialInstance.Num(); ++i)
+		{
+			DynamicDissolveMaterialInstance.SetNum(DissolveMaterialInstance.Num());
+			
+			DynamicDissolveMaterialInstance[i] = UMaterialInstanceDynamic::Create(DissolveMaterialInstance[i], this);
+			GetMesh()->SetMaterial(i, DynamicDissolveMaterialInstance[i]);
+			DynamicDissolveMaterialInstance[i]->SetScalarParameterValue(TEXT("Alpha"), 0.55f);
+			DynamicDissolveMaterialInstance[i]->SetScalarParameterValue(TEXT("EdgePower"), 1500.f);
+		}
+	}
+
+	StartDissolve();
+}
+
+void ACoopGnomeCharacter::UpdateDissolveMaterial(float DissolveValue)
+{
+	for (int i = 0; i < DynamicDissolveMaterialInstance.Num(); ++i)
+	{
+		if(DynamicDissolveMaterialInstance[i])
+		{
+			DynamicDissolveMaterialInstance[i]->SetScalarParameterValue(TEXT("Alpha"), DissolveValue);
+		}
+	}
+}
+
+void ACoopGnomeCharacter::StartDissolve()
+{
+	DissolveTrack.BindDynamic(this, &ACoopGnomeCharacter::UpdateDissolveMaterial);
+
+	if(DissolveCurve && DissolveTimeline)
+	{
+		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+		DissolveTimeline->Play();
+	}
 }
 
 void ACoopGnomeCharacter::EquipWeapon(FString WeaponName)
@@ -370,12 +514,12 @@ void ACoopGnomeCharacter::UnequipWeapon(FString WeaponName)
 	FItemStruct WeaponItem;
 	if (!InventoryComponent->GetItemByName(WeaponName, WeaponItem))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::UnequipWeapon(): WeaponItem is not found!"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::UnequipWeapon(): WeaponItem is not found!"));
 		return;
 	}
 	if (!WeaponItem.WeaponClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): WeaponClass is not valid!"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipWeapon(): WeaponClass is not valid!"));
 		return;
 	}
 
@@ -490,12 +634,25 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void ACoopGnomeCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatedBy, AActor* DamageCauser)
 {
-	PlayHitReactMontage();
+	//PlayHitReactMontage();
 }
 
 void ACoopGnomeCharacter::UpdateHealth(float CurrentHealth, float MaxHealth)
 {
 	PlayHitReactMontage();
+}
+
+void ACoopGnomeCharacter::PollInit()
+{
+	if(CoopGnomePlayerState == nullptr)
+	{
+		CoopGnomePlayerState = GetPlayerState<ACoopGnomePlayerState>();
+
+		if(CoopGnomePlayerState)
+		{
+			CoopGnomePlayerState->AddToScore(0);
+		}
+	}
 }
 
 void ACoopGnomeCharacter::Move(const FInputActionValue& Value)
@@ -595,7 +752,7 @@ void ACoopGnomeCharacter::EquipNextWeapon(const FInputActionValue& Value)
 {
 	if (!InventoryComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipNextWeapon(): InventoryComponent is not valid!"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACoopGnomeCharacter::EquipNextWeapon(): InventoryComponent is not valid!"));
 		return;
 	}
 

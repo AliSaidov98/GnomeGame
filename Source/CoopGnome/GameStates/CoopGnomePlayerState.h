@@ -18,9 +18,18 @@ public:
 
 	UFUNCTION()
 	virtual void OnRep_Defeats();
+	
+	UFUNCTION()
+	virtual void OnRep_AnnouncementMessage();
 
+	UFUNCTION(BlueprintCallable)
+	void SetAnnouncementMessage(FString AnnouncementMessage);
+	
+	void ClearAnnouncement();
+	
 	void AddToScore(float ScoreAmount);
 	void AddToDefeats(int32 DefeatsAmount);
+	
 private:
 	UPROPERTY()
 	class ACoopGnomeCharacter* Character;
@@ -30,4 +39,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
 
+	UPROPERTY(ReplicatedUsing = OnRep_AnnouncementMessage)
+	FString AnnouncementMessage;
+	
 };

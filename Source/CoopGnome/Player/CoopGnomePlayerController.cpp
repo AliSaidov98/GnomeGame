@@ -2,20 +2,21 @@
 
 
 #include "CoopGnomePlayerController.h"
+
 #include "Blueprint/UserWidget.h"
-#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/Image.h"
 #include "CoopGnome/CoopGnomeCharacter.h"
 #include "CoopGnome/GameModes/CoopGnomeGameMode.h"
 #include "CoopGnome/GameStates/CoopGnomePlayerState.h"
 #include "CoopGnome/Types/Announcement.h"
+#include "CoopGnome/UI/AnnounceWidget.h"
 #include "CoopGnome/UI/GameHUD.h"
 #include "CoopGnome/UI/ReturnToMainMenu.h"
+#include "CoopGnome/UI/ScoreWidget.h"
 
-void ACoopGnomePlayerController::SetHUDHealth(float Health, float MaxHealth)
+void ACoopGnomePlayerController::SetHUDHealth()
 {
 }
 
@@ -25,6 +26,26 @@ void ACoopGnomePlayerController::SetHUDShield(float Shield, float MaxShield)
 
 void ACoopGnomePlayerController::SetHUDScore(float Score)
 {
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	
+	bool bHUDValid = GameHUD &&
+		GameHUD->InterfaceWidget &&
+		GameHUD->InterfaceWidget->ScoreWidget;
+
+	if(!bHUDValid) return;
+	
+	UScoreWidget* ScoreWidget = Cast<UScoreWidget>(GameHUD->InterfaceWidget->ScoreWidget);
+	
+	bool bHUDPropertyValid = ScoreWidget->ScoreAmount && ScoreWidget->ScoreText;
+
+	if(bHUDValid && bHUDPropertyValid)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ScoreText"));
+		
+		FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt32(Score));
+		
+		ScoreWidget->ScoreAmount->SetText(FText::FromString(ScoreText));
+	}
 }
 
 void ACoopGnomePlayerController::SetHUDDefeats(int32 Defeats)
@@ -43,22 +64,34 @@ void ACoopGnomePlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
 }
 
-void ACoopGnomePlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
+void ACoopGnomePlayerController::SetHUDAnnouncementCountdown(FString AnnounceText)
 {
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	
+	bool bHUDValid = GameHUD &&
+		GameHUD->InterfaceWidget &&
+		GameHUD->InterfaceWidget->AnnounceWidget;
+
+	if(!bHUDValid) return;
+	
+	UAnnounceWidget* AnnounceWidget = Cast<UAnnounceWidget>(GameHUD->InterfaceWidget->AnnounceWidget);
+	
+	bool bHUDPropertyValid = IsValid(AnnounceWidget->AnnounceText);
+
+	if(bHUDValid && bHUDPropertyValid)
+	{
+		AnnounceWidget->AnnounceText->SetText(FText::FromString(AnnounceText));
+	}
 }
 
 void ACoopGnomePlayerController::SetHUDGrenades(int32 Grenades)
 {
 }
 
+
 void ACoopGnomePlayerController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);
-	ACoopGnomeCharacter* HumanCharacter = Cast<ACoopGnomeCharacter>(InPawn);
-	if (HumanCharacter)
-	{
-		//SetHUDHealth(HumanCharacter->GetHealth(), HumanCharacter->GetMaxHealth());
-	}
+	Super::OnPossess(InPawn);	
 }
 
 void ACoopGnomePlayerController::Tick(float DeltaTime)
@@ -111,7 +144,7 @@ void ACoopGnomePlayerController::HandleMatchHasStarted()
 
 void ACoopGnomePlayerController::HandleCooldown()
 {
-	ACoopGnomeCharacter* GnomeCharacter = Cast<ACoopGnomeCharacter>(GetPawn());
+	GnomeCharacter = GnomeCharacter ? GnomeCharacter : Cast<ACoopGnomeCharacter>(GetPawn());
 	if (GnomeCharacter)
 	{
 	}
@@ -127,7 +160,7 @@ void ACoopGnomePlayerController::BeginPlay()
 	Super::BeginPlay();
 	
 	GameHUD = Cast<AGameHUD>(GetHUD());
-	
+
 	ServerCheckMatchState();
 }
 
@@ -157,7 +190,7 @@ void ACoopGnomePlayerController::SetHUDTime()
 	{
 		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
 		{
-			SetHUDAnnouncementCountdown(TimeLeft);
+			SetHUDAnnouncementCountdown("Waiting");
 		}
 		if (MatchState == MatchState::InProgress)
 		{
@@ -175,6 +208,7 @@ void ACoopGnomePlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Quit", IE_Pressed, this, &ACoopGnomePlayerController::ShowReturnToMainMenu);
 }
+
 
 void ACoopGnomePlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
 {

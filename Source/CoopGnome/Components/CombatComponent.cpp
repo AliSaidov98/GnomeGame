@@ -200,6 +200,11 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::Unoccupied) return;
 
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
+	
 	if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
 		Character->Crouch();
@@ -282,9 +287,7 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("hand_rSocket"));
 	if (HandSocket)
 	{
-		FVector ActorScale = ActorToAttach->GetActorScale();
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
-		ActorToAttach->SetActorRelativeScale3D(ActorScale);
 	}
 }
 

@@ -18,4 +18,11 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUserWidget> HealthWidget;
 
+public:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUserWidget> ScoreWidget;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUserWidget> AnnounceWidget;
+
 };

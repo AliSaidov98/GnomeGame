@@ -14,8 +14,6 @@ void UHealthWidget::NativeConstruct()
     	
     if (!PlayerPawn)
         return;
-    
-    UE_LOG(LogTemp, Warning, TEXT("UHealthWidget::NativeConstruct ::::: %s"), *PlayerPawn->GetName());
 	
     auto HealthComponent = PlayerPawn->FindComponentByClass<UHealthComponent>();
     if (!HealthComponent)

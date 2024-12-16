@@ -23,6 +23,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChange OnHealthChange;
 
+	UPROPERTY()
+	AController* Instigator;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -54,6 +57,7 @@ public:
 	void OnRep_CurrentHealth();
 
 private:
+	UFUNCTION(NetMulticast, Reliable)
 	void Death();
 
 	UPROPERTY(EditAnywhere, Category = "Health", meta = (AllowPrivateAccess = "true"))

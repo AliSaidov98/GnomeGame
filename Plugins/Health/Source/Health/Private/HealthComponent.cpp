@@ -48,6 +48,20 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+
+	/*
+	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
+
+	if(!CoopGnomeGameMode) return;
+
+	ACoopGnomePlayerController* CharacterPlayerController = Cast<ACoopGnomePlayerController>(Controller);
+	ACoopGnomePlayerController* AttackerController = Cast<ACoopGnomePlayerController>(GetInstigatorController());
+	
+	CoopGnomeGameMode->PlayerEliminated(this, CharacterPlayerController, AttackerController);
+	*/
+
+	Instigator = InstigatedBy;
+	
 	ReceiveDamage(Damage);
 }
 
@@ -55,8 +69,6 @@ void UHealthComponent::ReceiveDamage(float Damage)
 {
 	if (bDead)
 		return;
-	
-	UE_LOG(LogHealth, Warning, TEXT("ReceiveDamage"));
 	
 	if (Damage <= 0)
 	{
@@ -111,12 +123,10 @@ void UHealthComponent::SetMaxHealth(float NewMaxHealth)
 
 void UHealthComponent::OnRep_CurrentHealth()
 {
-	UE_LOG(LogHealth, Warning, TEXT("OnRep_CurrentHealth"));
-		
 	OnHealthChange.Broadcast(CurrentHealth, MaxHealth);
 }
 
-void UHealthComponent::Death()
+void UHealthComponent::Death_Implementation()
 {
 	bDead = true;
 
@@ -133,7 +143,7 @@ void UHealthComponent::Death()
 	ACoopGnomePlayerController* AttackerController = Cast<ACoopGnomePlayerController>(Character->GetInstigator());
 	
 	GnomeGameMode->PlayerEliminated(Character, GnomeGameController, AttackerController);*/
-	if (bDestroyActorOnDeath)
-		GetOwner()->Destroy();
+	/*if (bDestroyActorOnDeath)
+		GetOwner()->Destroy();*/
 }
 

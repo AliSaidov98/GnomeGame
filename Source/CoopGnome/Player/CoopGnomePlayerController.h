@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HealthComponent.h"
+#include "CoopGnome/CoopGnomeCharacter.h"
+#include "CoopGnome/UI/MainInterfaceWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "CoopGnomePlayerController.generated.h"
 
@@ -14,16 +17,18 @@ class COOPGNOME_API ACoopGnomePlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDHealth();
 	void SetHUDShield(float Shield, float MaxShield);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);
 	void SetHUDWeaponAmmo(int32 Ammo);
 	void SetHUDCarriedAmmo(int32 Ammo);
 	void SetHUDMatchCountdown(float CountdownTime);
-	void SetHUDAnnouncementCountdown(float CountdownTime);
+
+	UFUNCTION(BlueprintCallable)
+	void SetHUDAnnouncementCountdown(FString AnnounceText);
 	void SetHUDGrenades(int32 Grenades);
-	
+
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -38,11 +43,19 @@ public:
 
 	FHighPingDelegate HighPingDelegate;
 
+	UPROPERTY()
+	UHealthComponent* HealthComponent;
+
+	UPROPERTY()
+	UMainInterfaceWidget* IntefaceWidget;
+
+
 	void BroadcastElim(APlayerState* Attacker, APlayerState* Victim);
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();
 	virtual void SetupInputComponent() override;
+
 	/**
 	* Sync time between client and server
 	*/
@@ -85,6 +98,12 @@ private:
 	
 	UPROPERTY()
 	class AGameHUD* GameHUD;
+	
+	UPROPERTY()
+	ACoopGnomeCharacter* GnomeCharacter;
+
+	UPROPERTY()
+	APawn* PawnCharacter;
 	/** 
 	* Return to main menu
 	*/
