@@ -62,6 +62,7 @@ void ACoopGnomePlayerController::SetHUDCarriedAmmo(int32 Ammo)
 
 void ACoopGnomePlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
+	
 }
 
 void ACoopGnomePlayerController::SetHUDAnnouncementCountdown(FString AnnounceText)
@@ -135,11 +136,18 @@ void ACoopGnomePlayerController::OnMatchStateSet(FName State)
 	else if (MatchState == MatchState::Cooldown)
 	{
 		HandleCooldown();
-	}
+	}	
 }
 
 void ACoopGnomePlayerController::HandleMatchHasStarted()
 {
+	GnomeCharacter = GnomeCharacter ? GnomeCharacter : Cast<ACoopGnomeCharacter>(GetPawn());
+	if (GnomeCharacter)
+	{
+		ACoopGnomePlayerState* GnomePlayerState = Cast<ACoopGnomePlayerState>(PlayerState);
+		if(GnomePlayerState)
+			GnomePlayerState->SetAnnouncementMessage("");
+	}
 }
 
 void ACoopGnomePlayerController::HandleCooldown()

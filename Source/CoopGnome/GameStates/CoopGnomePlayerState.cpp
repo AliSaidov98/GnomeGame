@@ -50,12 +50,6 @@ void ACoopGnomePlayerState::OnRep_AnnouncementMessage()
 		if (Controller)
 		{
 			Controller->SetHUDAnnouncementCountdown(AnnouncementMessage);
-			
-			/*if(Controller->IsLocalController())
-			{
-				FTimerHandle TimerHandle;
-				GetWorldTimerManager().SetTimer(TimerHandle, this, &ACoopGnomePlayerState::ClearAnnouncement, 1, true);
-			}*/
 		}
 	}
 }
@@ -71,12 +65,6 @@ void ACoopGnomePlayerState::SetAnnouncementMessage(FString Announcement)
 		if (Controller)
 		{
 			Controller->SetHUDAnnouncementCountdown(Announcement);
-			
-			/*if(Controller->IsLocalController())
-			{
-				FTimerHandle TimerHandle;
-				GetWorldTimerManager().SetTimer(TimerHandle, this, &ACoopGnomePlayerState::ClearAnnouncement, 1, true);
-			}*/
 		}
 	}
 }

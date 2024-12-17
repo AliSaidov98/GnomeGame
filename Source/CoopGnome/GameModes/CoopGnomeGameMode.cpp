@@ -19,6 +19,12 @@ ACoopGnomeGameMode::ACoopGnomeGameMode()
 	bDelayedStart = true;
 }
 
+void ACoopGnomeGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
 void ACoopGnomeGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -148,22 +154,16 @@ float ACoopGnomeGameMode::CalculateDamage(AController* Attacker, AController* Vi
 	return BaseDamage;
 }
 
-void ACoopGnomeGameMode::BeginPlay()
-{
-	Super::BeginPlay();
-	LevelStartingTime = GetWorld()->GetTimeSeconds();
-}
-
 void ACoopGnomeGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
 
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		ACoopGnomePlayerController* PC = Cast<ACoopGnomePlayerController>(*It);
-		if (PC)
+		ACoopGnomePlayerController* PlayerController = Cast<ACoopGnomePlayerController>(*It);
+		if (PlayerController)
 		{
-			PC->OnMatchStateSet(MatchState);
+			PlayerController->OnMatchStateSet(MatchState);
 		}
 	}
 }
