@@ -369,11 +369,11 @@ void ACoopGnomeCharacter::ElimMulticast_Implementation()
 
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+
+	bDisableGameplay = true;
 	
-	if(GetLocalViewingPlayerController())
-	{
-		//DisableInput(GetLocalViewingPlayerController());
-	}
+	if(Combat)
+		Combat->FireButtonPressed(false);
 	
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	SetActorEnableCollision(true);
@@ -413,8 +413,10 @@ void ACoopGnomeCharacter::NewPossess_Implementation()
 	if(!IsLocallyControlled()) return;
 	
 	ACoopGnomePlayerController* PlayerController = Cast<ACoopGnomePlayerController>(Controller);
-	
+
+	if(!PlayerController ) return;
 	if(!PlayerController->GetHUD()) return;
+	
 	Cast<AGameHUD>(PlayerController->GetHUD())->ShowMainInterface();
 
 }
@@ -696,7 +698,8 @@ void ACoopGnomeCharacter::Look(const FInputActionValue& Value)
 
 void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 {
-
+	if(bDisableGameplay) return;
+	
 	if(Combat)
 		Combat->FireButtonPressed(true);
 	
@@ -708,6 +711,8 @@ void ACoopGnomeCharacter::Attack(const FInputActionValue& Value)
 
 void ACoopGnomeCharacter::AttackReleased(const FInputActionValue& Value)
 {
+	if(bDisableGameplay) return;
+	
 	if(Combat)
 		Combat->FireButtonPressed(false);
 	/*if(!EquippedWeapon)

@@ -235,7 +235,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 50;
 
+	
+	bool bDisableGameplay = false;
+
 private:
+	
 	void SetupInventory();
 	UFUNCTION()
 	void EquipWeapon(FString WeaponName);

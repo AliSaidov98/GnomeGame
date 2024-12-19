@@ -51,7 +51,9 @@ public:
 
 
 	void BroadcastElim(APlayerState* Attacker, APlayerState* Victim);
+	
 protected:
+	
 	virtual void BeginPlay() override;
 	void SetHUDTime();
 	virtual void SetupInputComponent() override;
@@ -92,7 +94,10 @@ protected:
 	void ClientElimAnnouncement(APlayerState* Attacker, APlayerState* Victim);
 
 	FString GetInfoText(const TArray<class ACoopGnomePlayerState*>& Players);
+
+	
 private:
+	
 	UPROPERTY()
 	class ACoopGnomeGameMode* CoopGnomeGameMode;
 	

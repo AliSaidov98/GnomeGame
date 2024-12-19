@@ -8,13 +8,16 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "CoopGnome/CoopGnomeCharacter.h"
+#include "CoopGnome/Components/CombatComponent.h"
 #include "CoopGnome/GameModes/CoopGnomeGameMode.h"
 #include "CoopGnome/GameStates/CoopGnomePlayerState.h"
+#include "CoopGnome/GameStates/FreeForAllGameState.h"
 #include "CoopGnome/Types/Announcement.h"
 #include "CoopGnome/UI/AnnounceWidget.h"
 #include "CoopGnome/UI/GameHUD.h"
 #include "CoopGnome/UI/ReturnToMainMenu.h"
 #include "CoopGnome/UI/ScoreWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void ACoopGnomePlayerController::SetHUDHealth()
 {
@@ -139,6 +142,18 @@ void ACoopGnomePlayerController::OnMatchStateSet(FName State)
 	}	
 }
 
+void ACoopGnomePlayerController::OnRep_MatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		HandleMatchHasStarted();
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
+	}
+}
+
 void ACoopGnomePlayerController::HandleMatchHasStarted()
 {
 	GnomeCharacter = GnomeCharacter ? GnomeCharacter : Cast<ACoopGnomeCharacter>(GetPawn());
@@ -153,9 +168,51 @@ void ACoopGnomePlayerController::HandleMatchHasStarted()
 void ACoopGnomePlayerController::HandleCooldown()
 {
 	GnomeCharacter = GnomeCharacter ? GnomeCharacter : Cast<ACoopGnomeCharacter>(GetPawn());
+	
 	if (GnomeCharacter)
 	{
-	}
+		GnomeCharacter->bDisableGameplay = true;
+		
+		GnomeCharacter->GetCharacterMovement()->StopMovementImmediately();
+		GnomeCharacter->GetCharacterMovement()->DisableMovement();
+
+		GnomeCharacter->GetCombat()->FireButtonPressed(false);
+
+		ACoopGnomePlayerState* GnomePlayerState = Cast<ACoopGnomePlayerState>(PlayerState);
+		AFreeForAllGameState* FreeForAllGameState = Cast<AFreeForAllGameState>(UGameplayStatics::GetGameState(this));
+
+		if(!FreeForAllGameState || !GnomePlayerState) return;
+
+		TArray<ACoopGnomePlayerState*> TopPlayers = FreeForAllGameState->TopScoringPlayers;
+
+		
+		FString TopPlayerString = GetInfoText(TopPlayers);
+		
+		/*
+		if(TopPlayers.Num() == 0)
+		{
+			TopPlayerString = FString("There is no winner.");
+		}
+		else if(TopPlayers.Num() == 1 && TopPlayers[0] == GnomePlayerState)
+		{
+			TopPlayerString = FString("You are the winner!");
+		}
+		else if(TopPlayers.Num() == 1)
+		{
+			TopPlayerString = FString::Printf(TEXT("%s is the winner!"), *TopPlayers[0]->GetPlayerName());
+		}
+		else if(TopPlayers.Num() > 1)
+		{
+			TopPlayerString = FString("Players tied for the win:\n");
+
+			for (auto TiedPlayer : TopPlayers)
+			{
+				TopPlayerString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+			}
+		}*/
+		
+		GnomePlayerState->SetAnnouncementMessage(TopPlayerString);
+ 	}
 }
 
 void ACoopGnomePlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
@@ -196,7 +253,7 @@ void ACoopGnomePlayerController::SetHUDTime()
 
 	if (CountdownInt != SecondsLeft)
 	{
-		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
+		if (MatchState == MatchState::WaitingToStart/* || MatchState == MatchState::Cooldown*/)
 		{
 			SetHUDAnnouncementCountdown("Waiting");
 		}
@@ -381,18 +438,6 @@ void ACoopGnomePlayerController::ClientElimAnnouncement_Implementation(APlayerSt
 		{
 			return;
 		}
-	}
-}
-
-void ACoopGnomePlayerController::OnRep_MatchState()
-{
-	if (MatchState == MatchState::InProgress)
-	{
-		HandleMatchHasStarted();
-	}
-	else if (MatchState == MatchState::Cooldown)
-	{
-		HandleCooldown();
 	}
 }
 
