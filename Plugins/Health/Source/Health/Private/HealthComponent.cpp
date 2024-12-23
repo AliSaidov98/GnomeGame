@@ -13,7 +13,7 @@ class ACoopGnomeGameMode;
 class ACoopGnomeCharacter;
 class ACoopGnomePlayerController;*/
 
-UHealthComponent::UHealthComponent(): ArmorValue(0)
+UHealthComponent::UHealthComponent(): Instigator(nullptr), ArmorValue(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -24,6 +24,7 @@ UHealthComponent::UHealthComponent(): ArmorValue(0)
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentHealth = MaxHealth;
 
 	if (!GetOwner())
 		return;

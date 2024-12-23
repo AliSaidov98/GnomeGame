@@ -28,6 +28,7 @@ enum class EFireType : uint8
 	EFT_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEquippedDelegate);
 
 UCLASS()
 class COOPGNOME_API AWeapon : public AActor
@@ -100,6 +101,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	bool bUseScatter = false;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnEquippedDelegate OnEquippedDelegate;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnWeaponStateSet();

@@ -80,6 +80,8 @@ public:
 
 	FOnLeftGame OnLeftGame;
 
+	bool bLeftGame = false;
+
 	virtual void PostInitializeComponents() override;
 
 	/*
@@ -88,7 +90,7 @@ public:
 	 **/
 
 	UFUNCTION(NetMulticast, Reliable)
-	void ElimMulticast();
+	void ElimMulticast(bool bPlayerLeftGame);
 
 	UFUNCTION()
 	void Elim_Server();

@@ -27,6 +27,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetHUDAnnouncementCountdown(FString AnnounceText);
+	UFUNCTION(BlueprintCallable)
+	void GetHUDAnnouncement();
+	
 	void SetHUDGrenades(int32 Grenades);
 
 	virtual void OnPossess(APawn* InPawn) override;
@@ -38,6 +41,7 @@ public:
 	void OnMatchStateSet(FName State);
 	void HandleMatchHasStarted();
 	void HandleCooldown();
+	void HandleEndMatch();
 
 	float SingleTripTime = 0.f;
 
@@ -48,8 +52,16 @@ public:
 
 	UPROPERTY()
 	UMainInterfaceWidget* IntefaceWidget;
+	
+	/** Jump Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* QuitAction;
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UEnhancedInputComponent* EnhancedInputComponent;
+	*/
 
+	
 	void BroadcastElim(APlayerState* Attacker, APlayerState* Victim);
 	
 protected:

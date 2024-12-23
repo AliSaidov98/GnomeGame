@@ -110,6 +110,7 @@ void ACoopGnomeCharacter::ServerLeaveGame_Implementation()
 {
 	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
 	CoopGnomePlayerState = CoopGnomePlayerState == nullptr ? GetPlayerState<ACoopGnomePlayerState>() : CoopGnomePlayerState;
+
 	if (CoopGnomeGameMode && CoopGnomePlayerState)
 	{
 		CoopGnomeGameMode->PlayerLeftGame(CoopGnomePlayerState);
@@ -261,6 +262,7 @@ void ACoopGnomeCharacter::BeginPlay()
 		return;
 
 	HealthComponent->OnHealthChange.AddDynamic(this, &ACoopGnomeCharacter::UpdateHealth);
+
 	HealthComponent->OnDeath.AddDynamic(this, &ACoopGnomeCharacter::Elim_Server);
     
 	if(HasAuthority())
@@ -344,21 +346,20 @@ void ACoopGnomeCharacter::Elim_Server()
 
 	ACoopGnomePlayerController* CharacterPlayerController = Cast<ACoopGnomePlayerController>(Controller);
 	ACoopGnomePlayerController* AttackerController = Cast<ACoopGnomePlayerController>(HealthComponent->Instigator);
-	
-	CoopGnomeGameMode->PlayerEliminated(this, CharacterPlayerController, AttackerController);
 
-	ElimMulticast();
-
-	GetWorldTimerManager().SetTimer(
-		ElimTimer,
-		this,
-		&ACoopGnomeCharacter::ElimTimerFinished,
-		ElimDelay
-	);
+	if(CharacterPlayerController)
+		CoopGnomeGameMode->PlayerEliminated(this, CharacterPlayerController, AttackerController);
+	else
+		CoopGnomeGameMode->AIEliminated(this, AttackerController);
+		
+	ElimMulticast(bLeftGame);
 }
 
-void ACoopGnomeCharacter::ElimMulticast_Implementation()
+void ACoopGnomeCharacter::ElimMulticast_Implementation(bool bPlayerLeftGame)
 {
+
+	bLeftGame = bPlayerLeftGame;
+	
 	Dead = true;
 	
 	//PlayElimMontage();
@@ -386,24 +387,40 @@ void ACoopGnomeCharacter::ElimMulticast_Implementation()
 	
 	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&ACoopGnomeCharacter::ElimTimerFinished,
+		ElimDelay
+	);
 }
 
 void ACoopGnomeCharacter::ElimTimerFinished()
 {
 	CoopGnomeGameMode = CoopGnomeGameMode == nullptr ? GetWorld()->GetAuthGameMode<ACoopGnomeGameMode>() : CoopGnomeGameMode;
 
-	if(CoopGnomeGameMode)
+	if(CoopGnomeGameMode && !bLeftGame)
 		CoopGnomeGameMode->RequestRespawn(this, Controller);
+	if(bLeftGame && IsLocallyControlled())
+		OnLeftGame.Broadcast();
 }
+
 
 void ACoopGnomeCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	CoopGnomePlayerState = CoopGnomePlayerState == nullptr ? Cast<ACoopGnomePlayerState>(GetPlayerState()) : CoopGnomePlayerState;
+	/*CoopGnomePlayerState = CoopGnomePlayerState == nullptr ? Cast<ACoopGnomePlayerState>(GetPlayerState()) : CoopGnomePlayerState;
 
 	if(CoopGnomePlayerState)
-		CoopGnomePlayerState->ClearAnnouncement();
+	{
+		if(CoopGnomePlayerState.matchState)
+		if(CoopGnomePlayerState)
+			CoopGnomePlayerState->GetAnnouncementMessage();
+		
+	}*/
+	
 	
 	NewPossess();
 }
@@ -636,12 +653,12 @@ void ACoopGnomeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void ACoopGnomeCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatedBy, AActor* DamageCauser)
 {
-	//PlayHitReactMontage();
+	PlayHitReactMontage();
 }
 
 void ACoopGnomeCharacter::UpdateHealth(float CurrentHealth, float MaxHealth)
 {
-	PlayHitReactMontage();
+	//PlayHitReactMontage();
 }
 
 void ACoopGnomeCharacter::PollInit()

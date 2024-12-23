@@ -211,7 +211,9 @@ void AWeapon::OnEquipped()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 	EnableCustomDepth(false);
-
+	
+	OnEquippedDelegate.Broadcast();
+	
 	OwnerCharacter = OwnerCharacter == nullptr ? Cast<ACoopGnomeCharacter>(GetOwner()) : OwnerCharacter;
 	if (OwnerCharacter && bUseServerSideRewind)
 	{

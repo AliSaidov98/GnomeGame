@@ -3,6 +3,8 @@
 
 #include "CoopGnomePlayerController.h"
 
+#include "EnhancedInputComponent.h"
+#include "MultiplayerSessionsSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "Net/UnrealNetwork.h"
@@ -88,6 +90,30 @@ void ACoopGnomePlayerController::SetHUDAnnouncementCountdown(FString AnnounceTex
 	}
 }
 
+void ACoopGnomePlayerController::GetHUDAnnouncement()
+{
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	
+	bool bHUDValid = GameHUD &&
+		GameHUD->InterfaceWidget &&
+		GameHUD->InterfaceWidget->AnnounceWidget;
+
+	if(!bHUDValid) return;
+	
+	UAnnounceWidget* AnnounceWidget = Cast<UAnnounceWidget>(GameHUD->InterfaceWidget->AnnounceWidget);
+	
+	bool bHUDPropertyValid = IsValid(AnnounceWidget->AnnounceText);
+
+	ACoopGnomePlayerState* GnomePlayerState = GetPlayerState<ACoopGnomePlayerState>();
+
+	if(!GnomePlayerState) return;
+	
+	if(bHUDValid && bHUDPropertyValid)
+	{
+		AnnounceWidget->AnnounceText->SetText(FText::FromString(GnomePlayerState->GetAnnouncementMessage()));
+	}
+}
+
 void ACoopGnomePlayerController::SetHUDGrenades(int32 Grenades)
 {
 }
@@ -95,7 +121,9 @@ void ACoopGnomePlayerController::SetHUDGrenades(int32 Grenades)
 
 void ACoopGnomePlayerController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);	
+	Super::OnPossess(InPawn);
+	
+	ServerCheckMatchState();
 }
 
 void ACoopGnomePlayerController::Tick(float DeltaTime)
@@ -131,7 +159,7 @@ void ACoopGnomePlayerController::ReceivedPlayer()
 void ACoopGnomePlayerController::OnMatchStateSet(FName State)
 {
 	MatchState = State;
-
+	
 	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
@@ -139,11 +167,18 @@ void ACoopGnomePlayerController::OnMatchStateSet(FName State)
 	else if (MatchState == MatchState::Cooldown)
 	{
 		HandleCooldown();
+	}
+	else if (MatchState == MatchState::WaitingPostMatch)
+	{
+		HandleEndMatch();
 	}	
 }
 
 void ACoopGnomePlayerController::OnRep_MatchState()
 {
+	if(IsLocalController())
+		UE_LOG(LogTemp, Warning, TEXT("OnMatchStateSet :: %s"), *MatchState.ToString());
+	
 	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
@@ -151,6 +186,10 @@ void ACoopGnomePlayerController::OnRep_MatchState()
 	else if (MatchState == MatchState::Cooldown)
 	{
 		HandleCooldown();
+	}
+	else if (MatchState == MatchState::WaitingPostMatch)
+	{
+		HandleEndMatch();
 	}
 }
 
@@ -188,31 +227,20 @@ void ACoopGnomePlayerController::HandleCooldown()
 		
 		FString TopPlayerString = GetInfoText(TopPlayers);
 		
-		/*
-		if(TopPlayers.Num() == 0)
-		{
-			TopPlayerString = FString("There is no winner.");
-		}
-		else if(TopPlayers.Num() == 1 && TopPlayers[0] == GnomePlayerState)
-		{
-			TopPlayerString = FString("You are the winner!");
-		}
-		else if(TopPlayers.Num() == 1)
-		{
-			TopPlayerString = FString::Printf(TEXT("%s is the winner!"), *TopPlayers[0]->GetPlayerName());
-		}
-		else if(TopPlayers.Num() > 1)
-		{
-			TopPlayerString = FString("Players tied for the win:\n");
-
-			for (auto TiedPlayer : TopPlayers)
-			{
-				TopPlayerString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
-			}
-		}*/
-		
 		GnomePlayerState->SetAnnouncementMessage(TopPlayerString);
  	}
+}
+
+void ACoopGnomePlayerController::HandleEndMatch()
+{
+	GnomeCharacter = GnomeCharacter == nullptr ? Cast<ACoopGnomeCharacter>(GetPawn()) : GnomeCharacter;
+	
+	if(GnomeCharacter)
+	{
+		if(GnomeCharacter->IsLocallyControlled())
+			ShowReturnToMainMenu();
+	}
+	
 }
 
 void ACoopGnomePlayerController::BroadcastElim(APlayerState* Attacker, APlayerState* Victim)
@@ -270,8 +298,13 @@ void ACoopGnomePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	if (InputComponent == nullptr) return;
-
-	InputComponent->BindAction("Quit", IE_Pressed, this, &ACoopGnomePlayerController::ShowReturnToMainMenu);
+	
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(QuitAction, ETriggerEvent::Triggered, this, &ACoopGnomePlayerController::ShowReturnToMainMenu);
+	}
+	
+	
 }
 
 
@@ -368,6 +401,9 @@ void ACoopGnomePlayerController::CheckPing(float DeltaTime)
 
 void ACoopGnomePlayerController::ShowReturnToMainMenu()
 {
+	
+	UE_LOG(LogTemp, Warning, TEXT("ShowReturnToMainMenu :: "))
+		
 	if (ReturnToMainMenuWidget == nullptr) return;
 	if (ReturnToMainMenu == nullptr)
 	{

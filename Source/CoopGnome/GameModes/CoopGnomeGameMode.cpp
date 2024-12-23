@@ -49,7 +49,8 @@ void ACoopGnomeGameMode::Tick(float DeltaTime)
 		CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
 		if (CountdownTime <= 0.f)
 		{
-			EndMatch();
+			//EndMatch();
+			SetMatchState(MatchState::WaitingPostMatch);
 			//StartToLeaveMap();
 			//RestartGame();
 		}
@@ -60,14 +61,14 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 	class ACoopGnomePlayerController* VictimController, ACoopGnomePlayerController* AttackerController)
 {
 	if (AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
-	
+
 	if (VictimController == nullptr || VictimController->PlayerState == nullptr) return;
 	
 	ACoopGnomePlayerState* AttackerPlayerState = AttackerController ? Cast<ACoopGnomePlayerState>(AttackerController->PlayerState) : nullptr;
 	ACoopGnomePlayerState* VictimPlayerState = VictimController ? Cast<ACoopGnomePlayerState>(VictimController->PlayerState) : nullptr;
 	
 	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
-
+	
 	if (AttackerPlayerState && AttackerPlayerState != VictimPlayerState && FreeForAllGameState)
 	{
 		TArray<ACoopGnomePlayerState*> PlayersCurrentlyInTheLead;
@@ -120,8 +121,32 @@ void ACoopGnomeGameMode::PlayerEliminated(class ACoopGnomeCharacter* ElimmedChar
 	}
 }
 
+void ACoopGnomeGameMode::AIEliminated(ACoopGnomeCharacter* ElimmedCharacter,
+	ACoopGnomePlayerController* AttackerController)
+{
+	if (AttackerController == nullptr || AttackerController->PlayerState == nullptr) return;
+
+	ACoopGnomePlayerState* AttackerPlayerState = AttackerController ? Cast<ACoopGnomePlayerState>(AttackerController->PlayerState) : nullptr;
+	
+	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
+	
+	if (AttackerPlayerState && FreeForAllGameState)
+	{
+		TArray<ACoopGnomePlayerState*> PlayersCurrentlyInTheLead;
+		for (auto LeadPlayer : FreeForAllGameState->TopScoringPlayers)
+		{
+			PlayersCurrentlyInTheLead.Add(LeadPlayer);
+		}
+
+		AttackerPlayerState->AddToScore(1.f);
+		FreeForAllGameState->UpdateTopScore(AttackerPlayerState);
+	}
+}
+
 void ACoopGnomeGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 {
+	if(GetMatchState() == MatchState::Cooldown || GetMatchState() == MatchState::WaitingPostMatch) return;
+	
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Reset();
@@ -139,15 +164,18 @@ void ACoopGnomeGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AControlle
 void ACoopGnomeGameMode::PlayerLeftGame(class ACoopGnomePlayerState* PlayerLeaving)
 {
 	if (PlayerLeaving == nullptr) return;
+	
 	AFreeForAllGameState* FreeForAllGameState = GetGameState<AFreeForAllGameState>();
 	if (FreeForAllGameState && FreeForAllGameState->TopScoringPlayers.Contains(PlayerLeaving))
 	{
 		FreeForAllGameState->TopScoringPlayers.Remove(PlayerLeaving);
 	}
+	
 	ACoopGnomeCharacter* CharacterLeaving = Cast<ACoopGnomeCharacter>(PlayerLeaving->GetPawn());
 	if (CharacterLeaving)
 	{
-		//CharacterLeaving->Elim(true);
+		CharacterLeaving->bLeftGame = true;
+		CharacterLeaving->Elim_Server();
 	}
 }
 

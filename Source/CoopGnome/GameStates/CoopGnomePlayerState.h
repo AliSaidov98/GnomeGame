@@ -24,6 +24,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetAnnouncementMessage(FString AnnouncementMessage);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetAnnouncementMessage();
 	
 	void ClearAnnouncement();
 	

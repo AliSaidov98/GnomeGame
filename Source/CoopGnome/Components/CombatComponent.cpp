@@ -197,38 +197,30 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if (Character == nullptr || WeaponToEquip == nullptr) return;
+	if (Character == nullptr || WeaponToEquip == nullptr || EquippedWeapon) return;
 	if (CombatState != ECombatState::Unoccupied) return;
 
-	if(EquippedWeapon)
-	{
-		EquippedWeapon->Dropped();
-	}
+	EquipPrimaryWeapon(WeaponToEquip);
 	
-	if (WeaponToEquip->GetWeaponType() == EWeaponType::EWT_Flag)
+	/*
+	 *
+	 *
+	 * ------------    Will be used later | Dont delete
+	 *
+	 * 
+	 *if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
 	{
-		Character->Crouch();
-		bHoldingTheFlag = true;
-		WeaponToEquip->SetWeaponState(EWeaponState::EWS_Equipped);
-		AttachFlagToLeftHand(WeaponToEquip);
-		WeaponToEquip->SetOwner(Character);
-		TheFlag = WeaponToEquip;
+		EquipSecondaryWeapon(WeaponToEquip);
 	}
 	else
 	{
-		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
-		{
-			EquipSecondaryWeapon(WeaponToEquip);
-		}
-		else
-		{
-			EquipPrimaryWeapon(WeaponToEquip);
-		}
+		EquipPrimaryWeapon(WeaponToEquip);
+	}*/
 
-		Character->IsEquippedWeapon = true;
-		//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		//Character->bUseControllerRotationYaw = true;
-	}
+	Character->IsEquippedWeapon = true;
+	//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	//Character->bUseControllerRotationYaw = true;
+	
 }
 
 void UCombatComponent::SwapWeapons()
@@ -244,6 +236,7 @@ void UCombatComponent::SwapWeapons()
 void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
+	
 	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);

@@ -69,6 +69,11 @@ void ACoopGnomePlayerState::SetAnnouncementMessage(FString Announcement)
 	}
 }
 
+FString ACoopGnomePlayerState::GetAnnouncementMessage()
+{
+	return AnnouncementMessage;
+}
+
 
 void ACoopGnomePlayerState::ClearAnnouncement()
 {

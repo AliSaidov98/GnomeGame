@@ -22,6 +22,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void PlayerEliminated(class ACoopGnomeCharacter* ElimmedCharacter, class ACoopGnomePlayerController* VictimController, ACoopGnomePlayerController* AttackerController);
+	virtual void AIEliminated(class ACoopGnomeCharacter* ElimmedCharacter, ACoopGnomePlayerController* AttackerController);
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	void PlayerLeftGame(class ACoopGnomePlayerState* PlayerLeaving);
 	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage);

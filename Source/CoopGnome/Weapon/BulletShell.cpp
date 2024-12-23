@@ -1,7 +1,5 @@
 ﻿
 #include "BulletShell.h"
-
-#include "InputBehavior.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
